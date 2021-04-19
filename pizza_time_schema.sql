@@ -4,14 +4,14 @@ CREATE DATABASE pizza_time;
 
 CREATE TABLE users (
 id SERIAL PRIMARY KEY,
-name TEXT NOT NULL,
+name TEXT,
 username TEXT NOT NULL UNIQUE,
 Token TEXT NOT NULL
 );
 
 CREATE TABLE customers ( 
 id SERIAL PRIMARY KEY,
-cust_identifier TEXT NOT NULL
+name TEXT NOT NULL
 );
 
 CREATE TABLE notes (
