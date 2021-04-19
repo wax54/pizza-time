@@ -1,7 +1,9 @@
-from config import DB_URL, SECRET_KEY
-from db_setup import db, connect_db
 from flask import Flask, redirect
+
+from config import DB_URL, SECRET_KEY
+from db_setup import connect_db, db
 from users.__init__ import auth_views, user_views
+
 
 app = Flask(__name__)
 
@@ -16,8 +18,10 @@ connect_db(app)
 db.drop_all()
 db.create_all()
 
+
 app.register_blueprint(auth_views, url_prefix="/")
 app.register_blueprint(user_views, url_prefix="/pag")
+
 
 @app.route('/')
 def show_homepage():

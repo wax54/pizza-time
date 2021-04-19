@@ -12,7 +12,7 @@ def login():
     form = PagUserLogin()
     if form.validate_on_submit():
         email = form.email.data
-        password = form.passord.data
+        password = form.password.data
         token = api.login(email=email, password=password)
         if token:
             #successful credentials
@@ -21,4 +21,6 @@ def login():
             return redirect('/pag/current_delivery')
         else:
             flash("Not Valid Credentials!", "danger")
-    return render_template('user_login.html', form=form)
+            return render_template('user_login.html', form=form)
+    else:
+        return render_template('user_login.html', form=form)
