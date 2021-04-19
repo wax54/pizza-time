@@ -1,4 +1,5 @@
 from db_setup import db
+from deliveries.utils import get_date
 
 
 class Delivery(db.Model):
@@ -13,26 +14,31 @@ class Delivery(db.Model):
 
     @classmethod
     def save_delivery(cls, delivery, driver_id):
-        print(delivery)
-        date = delivery['date']
+        date = get_date(delivery['date'])
         orders = delivery['orders']
         old_deliveries = set()
 
         delivery = Delivery(date=date, driver_id=driver_id)
         db.session.add(delivery)
         db.session.commit()
-
+        ######
+        # A little wasteful, good optimization possibility, I think
         for order in orders:
-            o = Order.search(date=date, num=order["num"])
+            o_id = Order.make_id_from_date_and_num(
+                date=date, num=order['num'])
+            o = Order.query.get(o_id)
             if o:
                 old_deliveries.add(o.del_id)
                 o.del_id = delivery.id
                 o.driver_id = driver_id
             else:
-                #maybe change this to a hash of the phone and address
+                # maybe change this to a hash of the phone and address
                 c = Customer.create_or_get(name=order['phone'])
                 o = Order(
-                    date=date, num=order['num'], del_id=delivery.id, cust_id=c.id, driver_id=driver_id)
+                    id=o_id,
+                    del_id=delivery.id,
+                    cust_id=c.id,
+                    driver_id=driver_id)
             db.session.add(o)
         db.session.commit()
 
@@ -44,17 +50,14 @@ class Delivery(db.Model):
         for del_id in del_ids:
             d = cls.query.get(del_id)
             if len(d.orders) == 0:
-                cls.query.delete(del_id)
+                db.session.delete(d)
         db.session.commit()
 
 
 class Order(db.Model):
     """A single order"""
     __tablename__ = "orders"
-    id = db.Column(
-        db.Integer, autoincrement=True, primary_key=True)
-    date = db.Column(db.Date, nullable=False)
-    num = db.Column(db.Integer, nullable=False)
+    id = db.Column(db.Text, primary_key=True)
     tip = db.Column(db.Float, server_default='0')
     del_id = db.Column(db.Integer, db.ForeignKey(
         'deliveries.id', ondelete='CASCADE'))
@@ -65,11 +68,16 @@ class Order(db.Model):
 
     @classmethod
     def search(cls, date, num):
-        o = cls.query.filter_by(date=date, num=num).first()
+        id = cls.get_id_from_date_and_num(date=date, num=num)
+        o = cls.query.get(id)
         if o:
             return o
         else:
             return False
+
+    @classmethod
+    def make_id_from_date_and_num(cls, date, num):
+        return f'{date}{num}'
 
 
 class Customer(db.Model):

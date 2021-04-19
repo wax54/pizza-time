@@ -32,5 +32,8 @@ def show_current_delviery():
         return render_template('deliveries/current_delivery.html', delivery=delivery, name=u.name)
     if delivery['orders']:
         #successful credentials and delivery found
-        Delivery.save_delivery(delivery=delivery, driver_id=u.id)
+        d = Delivery.save_delivery(delivery=delivery, driver_id=u.id)
+        #this is real rough, should clean this up....
+        for i in range(len(d.orders)):
+            delivery['orders'][i]['tip'] = d.orders[i].tip
         return render_template('deliveries/current_delivery.html', delivery=delivery, name=u.name)
