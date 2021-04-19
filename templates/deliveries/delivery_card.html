@@ -1,0 +1,8 @@
+{% if delivery %}
+{% for order in delivery['orders'] %}
+<div id="{{order['num']}}">
+    {% include 'deliveries/order_card.html' %}
+</div>
+{% endfor %}
+
+{% endif %}

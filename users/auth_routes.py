@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, session, redirect, flash
 from config import USER_KEY
 from users.forms import PagUserLogin
 from users.models import User
-import pag_api as api
+import api.pag_api as api
 
 auth_views = Blueprint('auth_routes', __name__)
 

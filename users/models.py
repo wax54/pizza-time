@@ -1,13 +1,12 @@
 from db_setup import db
 
 
-
 class User(db.Model):
     """A single user"""
     __tablename__ = "users"
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.Text, unique=True)
-    username = db.Column(db.Text, nullable=False)
+    email = db.Column(db.Text, nullable=False)
     token = db.Column(db.Text, nullable=False, unique=True)
     notes = db.relationship('Note',
                             backref='user')
@@ -15,7 +14,6 @@ class User(db.Model):
     @classmethod
     def get(cls, pk):
         return cls.query.get(pk)
-
 
     @classmethod
     def create_or_update(cls, email, token, name=None):
@@ -31,26 +29,6 @@ class User(db.Model):
         db.session.add(u)
         db.session.commit()
         return u.id
-
-
-class Customer(db.Model):
-    """A single customer"""
-    __tablename__ = "customers"
-    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
-    notes = db.relationship('Note',
-                            backref='customer')
-
-
-class Note(db.Model):
-    """A single note"""
-    __tablename__ = "notes"
-    cust_id = db.Column(db.Integer, db.ForeignKey(
-        'customers.id', ondelete='CASCADE'), primary_key=True)
-    driver_id = db.Column(db.Integer, db.ForeignKey(
-        'users.id', ondelete='CASCADE'), primary_key=True)
-    note = db.Column(db.Text, nullable=False)
-
 
 
 class schedules(db.Model):
