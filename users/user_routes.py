@@ -3,7 +3,9 @@ from config import USER_KEY
 from deliveries.models import Delivery
 from users.models import User, Schedule, PagCode
 import api.pag_api as api
+from functools import reduce
 import datetime
+
 user_views = Blueprint('user_routes', __name__)
 
 
@@ -70,18 +72,18 @@ def edit_delvieries():
 
 @user_views.route('/dashboard')
 def show_stats():
-    #figures
+    STATS_TIMEFRAME = datetime.timedelta(days=7)
+    u_id = g.user.id
+    # figures
     orders = g.user.orders
-    shifts = g.user.shifts
+    shifts = Schedule.get_last(user_id=u_id, delta=STATS_TIMEFRAME)
 
     total_dels = len(orders)
-    total_tips = get_total_tips(orders)
+    total_tips = reduce(get_total_tips, orders, 0)
+    total_hours = reduce(get_total_hours, shifts, 0)
 
-    #shift_hours =
-    print("##############################")
-    print(shifts[0].get_shift_length())
-
-    dol_per_del = total_tips/total_dels
+    tips_per_del = total_tips/total_dels
+    tips_per_hour = total_tips/total_hours
     stats = [{
         "title": "Total Orders",
         "result": total_dels
@@ -89,19 +91,30 @@ def show_stats():
         "title": "Total Tips Earned",
         "result": f'${total_tips}'
     }, {
-        "title": "Dollars/Delivery",
-        "desc": "Avg amount of dollars made per delivery",
-        "result": f'${dol_per_del}'
+        "title": "Total hours Recorded",
+        "result": f'{total_hours}'
+    }, {
+        "title": "Dollars/Hour",
+        "desc": "Avg amount of dollars made hour worked (according to your schedule)",
+        "result": f'${round(tips_per_hour, 2)}'
+    },  {
+        "title": "tips/Delivery",
+        "desc": "Avg amount of tips made per delivery",
+        "result": f'${round(tips_per_del, 2)}'
     }
     ]
     return render_template('stats_page.html', stats=stats)
 
 
-def get_total_tips(orders):
-    total = 0
-    for order in orders:
-        total += order.tip
-    return total
+def get_total_tips(total, order):
+    return total + order.tip
+
+
+def get_total_hours(total_hours, shift_to_add):
+    delta = shift_to_add.get_shift_length()
+    # 60 seconds in a min, 60 mins in a hour
+    hours = delta.total_seconds() / 60 / 60
+    return total_hours + hours
 
 
 @user_views.route('/show_schedule')

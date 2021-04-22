@@ -79,15 +79,6 @@ class Order(db.Model):
                 "driver_id": self.driver_id
                 }
     @classmethod
-    def search(cls, date, num):
-        id = cls.get_id_from_date_and_num(date=date, num=num)
-        o = cls.query.get(id)
-        if o:
-            return o
-        else:
-            return False
-
-    @classmethod
     def make_id_from_date_and_num(cls, date, num):
         return f'{date}|{num}'
 

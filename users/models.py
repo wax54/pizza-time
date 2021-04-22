@@ -48,14 +48,32 @@ class Schedule(db.Model):
         'users.id', ondelete='CASCADE'))
 
     def get_shift_length(self):
-        return self.start-self.end
+        """gets the length of the shift
+        returns a datetime.timedelta object """
+        return self.end-self.start
 
     @classmethod
-    def get_future_shifts(cls, u_id):
+    def get_future_shifts(cls, user_id):
         return cls.query.filter(
-            Schedule.user_id == u_id,
+            Schedule.user_id == user_id,
             Schedule.start >= datetime.date.today()
         ).all()
+
+    @classmethod
+    def get_last(cls, user_id, delta=None):
+        if delta:
+            return cls.query.filter(
+                Schedule.user_id == user_id,
+                Schedule.start <= datetime.date.today(),
+                Schedule.end >= (datetime.date.today() - delta)
+
+            ).all()
+        else:
+            return cls.query.filter(
+                Schedule.user_id == user_id,
+                Schedule.start <= datetime.date.today()
+
+            ).all()
 
     @classmethod
     def update_from_pag(cls, schedules, user_id):
