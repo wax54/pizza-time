@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Schedule{% endblock %}
+
+{% block content %}
+HELLO!
+<ul> Start - End - Type
+    {% for shift in shifts %}
+    <li>
+        {{shift.start}} - {{shift.end}} - {{shift.shift_type}}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

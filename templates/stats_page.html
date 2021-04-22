@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Stats!{% endblock %}
+
+{% block content %}
+<h1>HELLO!</h1>
+{% for stat in stats %}
+<div class="stat" id="{{stat.name}}">
+    <h2 class="stat-title">{{stat['title']}}</h2>
+
+    {% if stat.get("desc")%}
+    <p class="stat-desc">{{stat['desc']}}</p>
+    {% endif %}
+    <span class="stat-html">
+        {% if stat.get("html")%}
+        {{stat['html']}}
+        {% else %}
+        {{stat['result']}}
+        {% endif %}
+    </span>
+</div>
+{% endfor %}
+{% endblock %}

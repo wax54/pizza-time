@@ -1,5 +1,6 @@
 from db_setup import db
 from deliveries.utils import get_date
+from users.models import User
 
 
 class Delivery(db.Model):
@@ -9,6 +10,8 @@ class Delivery(db.Model):
     date = db.Column(db.Date, nullable=False)
     driver_id = db.Column(db.Integer, db.ForeignKey(
         'users.id', ondelete='CASCADE'))
+    driver = db.relationship('User',
+                             backref='deliveries')
     orders = db.relationship('Order',
                              backref='delivery')
 
@@ -65,7 +68,16 @@ class Order(db.Model):
         'customers.id', ondelete='SET NULL'))
     driver_id = db.Column(db.Integer, db.ForeignKey(
         'users.id', ondelete='CASCADE'))
+    driver = db.relationship('User',
+                             backref='orders')
 
+    def serialize(self):
+        return {"id": self.id,
+                "tip": self.tip,
+                "del_id": self.del_id,
+                "cust_id": self.cust_id,
+                "driver_id": self.driver_id
+                }
     @classmethod
     def search(cls, date, num):
         id = cls.get_id_from_date_and_num(date=date, num=num)
@@ -77,7 +89,7 @@ class Order(db.Model):
 
     @classmethod
     def make_id_from_date_and_num(cls, date, num):
-        return f'{date}{num}'
+        return f'{date}|{num}'
 
 
 class Customer(db.Model):

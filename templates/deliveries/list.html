@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}All Deliveries!{% endblock %}
+
+{% block content %}
+<ul id="delivery_list">
+    {% for delivery in deliveries %}
+    <li id="{{delivery.id}}"> {{delivery.date}}
+        <ul>
+            {% for order in delivery.orders %}
+            <li id="{{order.id}}">
+                {{order.cust_id}}
+                <input type="number" step=".01" name="{{order.id}}" value="{{order.tip}}">
+            </li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

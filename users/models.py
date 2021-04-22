@@ -1,4 +1,5 @@
 from db_setup import db
+import datetime
 
 
 class User(db.Model):
@@ -10,7 +11,8 @@ class User(db.Model):
     token = db.Column(db.Text, nullable=False, unique=True)
     notes = db.relationship('Note',
                             backref='user')
-
+    shifts = db.relationship('Schedule',
+                             backref='user')
     @classmethod
     def get(cls, pk):
         return cls.query.get(pk)
@@ -34,14 +36,64 @@ class User(db.Model):
         return u.id
 
 
-class schedules(db.Model):
+class Schedule(db.Model):
     """A single shift"""
     __tablename__ = "schedules"
     id = db.Column(
         db.Integer, autoincrement=True, primary_key=True)
-    pag_code = db.Column(db.Integer, nullable=False)
     start = db.Column(db.DateTime, nullable=False)
     end = db.Column(db.DateTime, nullable=False)
     shift_type = db.Column(db.String(20))
     user_id = db.Column(db.Integer, db.ForeignKey(
         'users.id', ondelete='CASCADE'))
+
+    def get_shift_length(self):
+        return self.start-self.end
+
+    @classmethod
+    def get_future_shifts(cls, u_id):
+        return cls.query.filter(
+            Schedule.user_id == u_id,
+            Schedule.start >= datetime.date.today()
+        ).all()
+
+    @classmethod
+    def update_from_pag(cls, schedules, user_id):
+        # TODO
+        for week in schedules:
+            print(week)
+            # for each week in schedules,
+            # add the pag_code to PagCode
+            code = week['pag_code']
+            PagCode.add(code, user_id)
+            for shift in week['schedule']:
+                # for every shift, make a new schedule
+                db_shift = Schedule(
+                    start=shift['start'],
+                    end=shift['end'],
+                    shift_type=shift['shift_type'],
+                    user_id=user_id)
+                db.session.add(db_shift)
+        db.session.commit()
+
+
+# def get_datetime(string_date):
+#     DATE_FORMAT = "%a, %d %b %Y %H:%M:%S %Z"  # "Mon, 19 Apr 2021 00:00:00 GMT"
+#     return datetime.datetime.strptime(string_date, DATE_FORMAT)
+
+
+class PagCode(db.Model):
+    __tablename__ = "pag_codes"
+    code = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        'users.id', ondelete='CASCADE'))
+
+    @classmethod
+    def add(cls, code, user_id):
+        db_entry = cls(code=code, user_id=user_id)
+        db.session.add(db_entry)
+        db.session.commit()
+
+    @classmethod
+    def get_codes_for_user(cls, user_id):
+        return cls.query.filter_by(user_id=user_id).limit(3).all()
