@@ -17,6 +17,9 @@ class User(db.Model):
 
     @classmethod
     def create_or_update(cls, email, token, name=None):
+        """If a user already exists, update the token (and name if given) 
+        and return the id to the caller
+            otherwise, create the user and return the id to the caller"""
         u = cls.query.filter_by(email=email).first()
         if u:
             # user already exists, just update token

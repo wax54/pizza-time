@@ -20,6 +20,7 @@ def show_current_delviery():
     if not u:
         flash("Please Log In!")
         return redirect('/login')
+
     token = u.token
     email = u.email
     delivery = api.get_delivery(email=email, token=token)
