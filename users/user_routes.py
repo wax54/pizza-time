@@ -1,7 +1,7 @@
 from flask import Blueprint, redirect, jsonify, render_template, session, flash, g, request
 from config import USER_KEY, API_SESSION_KEY
 from deliveries.models import Delivery
-from users.models import User, Schedule, PagCode
+from users.models import User, Schedule, WeekCode
 from api import pag_api, demo_api
 from functools import reduce
 import datetime
@@ -88,7 +88,7 @@ def show_stats():
     # figures
     all_orders = g.user.orders
 
-    #STATS TIMEFRAME STUFF!
+    # STATS TIMEFRAME STUFF!
     shifts = Schedule.get_last(user_id=u_id, delta=STATS_TIMEFRAME)
     orders = [o for o in all_orders if within_stat_timeframe(o.date)]
 
@@ -110,8 +110,6 @@ def show_stats():
         5: 0,
         6: 0
     })
-
-
 
     stats = [{
         "title": "Total Orders",
@@ -166,13 +164,16 @@ def show_schedule():
 
 
 def update_schedule(user):
-    # TODO
     # check for old schedule codes
-    codes = PagCode.get_codes_for_user(user.id)
+    codes = WeekCode.get_codes_for_user(user.id)
 
     # send old schedule codes with the request
     schedules = g.api.get_schedules(
         email=user.email, token=user.token, ignore=codes)
     # if a new schedule pops up,
+
     if schedules:
-        Schedule.update_from_pag(schedules=schedules, user_id=user.id)
+        if session[API_SESSION_KEY] == "pag":
+            Schedule.add_from_pag(schedules=schedules, user_id=user.id)
+        if session[API_SESSION_KEY] == "demo":
+            Schedule.add_from_demo(schedules=schedules, user_id=user.id)

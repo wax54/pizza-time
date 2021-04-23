@@ -76,14 +76,31 @@ class Schedule(db.Model):
             ).all()
 
     @classmethod
-    def update_from_pag(cls, schedules, user_id):
-        # TODO
+    def add_from_pag(cls, schedules, user_id):
+
         for week in schedules:
-            print(week)
             # for each week in schedules,
-            # add the pag_code to PagCode
+            # add the pag_code to WeekCode
             code = week['pag_code']
-            PagCode.add(code, user_id)
+            WeekCode.add(code, user_id)
+            for shift in week['schedule']:
+                # for every shift, make a new schedule
+                db_shift = Schedule(
+                    start=shift['start'],
+                    end=shift['end'],
+                    shift_type=shift['shift_type'],
+                    user_id=user_id)
+                db.session.add(db_shift)
+        db.session.commit()
+
+    @classmethod
+    def add_from_demo(cls, schedules, user_id):
+
+        for week in schedules:
+            # for each week in schedules,
+            # add the week_code to WeekCode
+            code = week['week_code']
+            WeekCode.add(code, user_id)
             for shift in week['schedule']:
                 # for every shift, make a new schedule
                 db_shift = Schedule(
@@ -100,8 +117,8 @@ class Schedule(db.Model):
 #     return datetime.datetime.strptime(string_date, DATE_FORMAT)
 
 
-class PagCode(db.Model):
-    __tablename__ = "pag_codes"
+class WeekCode(db.Model):
+    __tablename__ = "week_codes"
     code = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(
         'users.id', ondelete='CASCADE'))
