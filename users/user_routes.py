@@ -1,10 +1,16 @@
 from flask import Blueprint, redirect, jsonify, render_template, session, flash, g, request
-from config import USER_KEY
+from config import USER_KEY, API_SESSION_KEY
 from deliveries.models import Delivery
 from users.models import User, Schedule, PagCode
-import api.pag_api as api
+from api import pag_api, demo_api
 from functools import reduce
 import datetime
+
+
+apis = {
+    "pag": pag_api,
+    "demo": demo_api
+}
 
 user_views = Blueprint('user_routes', __name__)
 
@@ -17,6 +23,7 @@ def add_user_to_g_or_redirect():
 
     if USER_KEY in session:
         g.user = User.query.get(session[USER_KEY])
+        g.api = apis[session[API_SESSION_KEY]]
         if not g.user:
             flash("Please Log In!")
             return redirect('/login')
@@ -29,7 +36,7 @@ def add_user_to_g_or_redirect():
 def show_current_delviery():
     token = g.user.token
     email = g.user.email
-    delivery = api.get_delivery(email=email, token=token)
+    delivery = g.api.get_delivery(email=email, token=token)
     if delivery == False:
         # validation error
         return redirect('/login')
@@ -164,7 +171,7 @@ def update_schedule(user):
     codes = PagCode.get_codes_for_user(user.id)
 
     # send old schedule codes with the request
-    schedules = api.get_schedules(
+    schedules = g.api.get_schedules(
         email=user.email, token=user.token, ignore=codes)
     # if a new schedule pops up,
     if schedules:

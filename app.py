@@ -19,8 +19,8 @@ connect_db(app)
 # db.create_all()
 
 
-app.register_blueprint(auth_views, url_prefix="/")
-app.register_blueprint(user_views, url_prefix="/pag")
+app.register_blueprint(auth_views, url_prefix="")
+app.register_blueprint(user_views, url_prefix="")
 
 
 @app.route('/')
