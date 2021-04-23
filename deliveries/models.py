@@ -7,7 +7,6 @@ class Delivery(db.Model):
     """A single delivery"""
     __tablename__ = "deliveries"
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    date = db.Column(db.Date, nullable=False)
     driver_id = db.Column(db.Integer, db.ForeignKey(
         'users.id', ondelete='CASCADE'))
     driver = db.relationship('User',
@@ -21,7 +20,7 @@ class Delivery(db.Model):
         orders = delivery['orders']
         old_deliveries = set()
 
-        delivery = Delivery(date=date, driver_id=driver_id)
+        delivery = Delivery(driver_id=driver_id)
         db.session.add(delivery)
         db.session.commit()
         ######
@@ -39,6 +38,7 @@ class Delivery(db.Model):
                 c = Customer.create_or_get(name=order['phone'])
                 o = Order(
                     id=o_id,
+                    date=date,
                     del_id=delivery.id,
                     cust_id=c.id,
                     driver_id=driver_id)
@@ -61,6 +61,7 @@ class Order(db.Model):
     """A single order"""
     __tablename__ = "orders"
     id = db.Column(db.Text, primary_key=True)
+    date = db.Column(db.Date, nullable=False)
     tip = db.Column(db.Float, server_default='0')
     del_id = db.Column(db.Integer, db.ForeignKey(
         'deliveries.id', ondelete='CASCADE'))

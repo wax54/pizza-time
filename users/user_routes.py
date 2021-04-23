@@ -73,17 +73,39 @@ def edit_delvieries():
 @user_views.route('/dashboard')
 def show_stats():
     STATS_TIMEFRAME = datetime.timedelta(days=7)
+
+    def within_stat_timeframe(date):
+        today = datetime.date.today()
+        return date <= today and date >= today - STATS_TIMEFRAME
     u_id = g.user.id
     # figures
-    orders = g.user.orders
+    all_orders = g.user.orders
+
+    #STATS TIMEFRAME STUFF!
     shifts = Schedule.get_last(user_id=u_id, delta=STATS_TIMEFRAME)
+    orders = [o for o in all_orders if within_stat_timeframe(o.date)]
 
     total_dels = len(orders)
     total_tips = reduce(get_total_tips, orders, 0)
     total_hours = reduce(get_total_hours, shifts, 0)
+    try:
+        tips_per_del = total_tips/total_dels
+        tips_per_hour = total_tips/total_hours
+    except ZeroDivisionError:
+        tips_per_del = 0
+        tips_per_hour = 0
+    dels_per_day_of_week = reduce(get_dels_as_dow, orders, {
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 0
+    })
 
-    tips_per_del = total_tips/total_dels
-    tips_per_hour = total_tips/total_hours
+
+
     stats = [{
         "title": "Total Orders",
         "result": total_dels
@@ -101,9 +123,19 @@ def show_stats():
         "title": "tips/Delivery",
         "desc": "Avg amount of tips made per delivery",
         "result": f'${round(tips_per_del, 2)}'
+    }, {
+        "title": "Orders per Day of Week",
+        "desc": "Number of orders taken per day of week in last STAT_TIMEFRAME",
+        "result": dels_per_day_of_week
     }
     ]
     return render_template('stats_page.html', stats=stats)
+
+
+def get_dels_as_dow(dow_counter, order):
+    dow = order.date.weekday()
+    dow_counter[dow] += 1
+    return dow_counter
 
 
 def get_total_tips(total, order):
