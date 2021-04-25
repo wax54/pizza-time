@@ -44,6 +44,6 @@ def get_delivery(email, token):
 def login(email, password):
     if email and password:
         # successful login
-        return "DEMOUSERTOKEN"
+        return hash(randint(100, 100000000))
     else:
         return False

@@ -2,25 +2,25 @@ from flask import Blueprint, redirect, jsonify, render_template, session, flash,
 from config import USER_KEY, API_SESSION_KEY
 from deliveries.models import Delivery
 from users.models import User, Schedule, WeekCode
-from api import pag_api, demo_api
+from api import apis
 from functools import reduce
 import datetime
-
-
-apis = {
-    "pag": pag_api,
-    "demo": demo_api
-}
-
+import urllib
 user_views = Blueprint('user_routes', __name__)
 
 
+def urlencode(string):
+    return urllib.parse.quote_plus(string)
+
 # This is run before anything in this file
+
+
 @user_views.before_request
 def add_user_to_g_or_redirect():
     """If we're logged in, add curr user to Flask global.
     otherwise, redirect them to login"""
-
+    print("*****************")
+    print(session)
     if USER_KEY in session:
         g.user = User.query.get(session[USER_KEY])
         g.api = apis[session[API_SESSION_KEY]]
@@ -39,6 +39,7 @@ def show_current_delviery():
     delivery = g.api.get_delivery(email=email, token=token)
     if delivery == False:
         # validation error
+        flash("Error validating against API, Please try logging in, again. Thanks!")
         return redirect('/login')
     if delivery['orders'] == []:
         # no delivery found
@@ -46,6 +47,17 @@ def show_current_delviery():
     if delivery['orders']:
         # successful credentials and delivery found
         d = Delivery.save_delivery(delivery=delivery, driver_id=g.user.id)
+
+        # So now we have the variable delivery,
+        #       A plain object the API gave us
+        #       with a date key and an orders key containing and array of orders
+        # and we have the variable d,
+        #       Which is the concept of the Database delivery we found or made.
+        #       If we found any orders in the DB, they may have tip info that we want to retain
+        # We want to use the API delivery object because it has the address and the phone.
+        #       But, we want to get the tip from the db object and add
+        #       it to the API Object(which currently has no Tip Attr)
+
         # this is real rough, should clean this up....
         for i in range(len(d.orders)):
             delivery['orders'][i]['tip'] = d.orders[i].tip
@@ -73,7 +85,7 @@ def edit_order_tip():
 
 @user_views.route('/edit_deliveries')
 def edit_delvieries():
-    orders = g.user.orders
+    orders = g.user.get_orders()
     return render_template("deliveries/list_orders.html", orders=orders)
 
 

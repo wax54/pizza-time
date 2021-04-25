@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, session, redirect, flash
 from config import USER_KEY, API_SESSION_KEY
-from users.forms import PagUserLogin
+from users.forms import UserLogin
 from users.models import User
-import api.pag_api as api
+from api import apis
 
 auth_views = Blueprint('auth_routes', __name__)
 
@@ -12,11 +12,14 @@ def login_to_pag():
     """Displays the login form on GET 
     Attempts to Log the user into the API on POST"""
     #get the form
-    form = PagUserLogin()
+    form = UserLogin()
     #see if its a POST and if all required data is there
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
+        api_key = form.api.data
+        #set the API to use
+        api = apis[api_key]
         #attempt to login to the API
         token = api.login(email=email, password=password)
         #if success
@@ -25,7 +28,8 @@ def login_to_pag():
             u_id = User.create_or_update(email=email, token=token)
             #put the id in the session
             session[USER_KEY] = u_id
-            session[API_SESSION_KEY] = form.api.data
+            session[API_SESSION_KEY] = api_key
+
             #redirect to curr_del page
             return redirect('/current_delivery')
         else:

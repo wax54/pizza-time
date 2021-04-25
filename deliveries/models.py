@@ -1,6 +1,7 @@
 from db_setup import db
 from deliveries.utils import get_date
 from users.models import User
+from datetime import date as date_class
 
 
 class Delivery(db.Model):
@@ -79,6 +80,27 @@ class Order(db.Model):
                 "cust_id": self.cust_id,
                 "driver_id": self.driver_id
                 }
+
+    @classmethod
+    def get_orders_for_day(cls, driver_id, date=date_class.today()):
+        """ Returns 
+        213, 04-19-21, 8425-881-7843
+        """
+        return db.session.query(
+            Order, Customer).join(
+                Customer, Customer.id == Order.cust_id).filter(
+                    Order.driver_id == driver_id,
+                    Order.date == date).all()
+
+    @classmethod
+    def get_orders_for(cls, driver_id):
+        """ Returns 
+        213, 04-19-21, 8425-881-7843
+        """
+        return db.session.query(
+            Order, Customer).join(
+                Customer, Customer.id == Order.cust_id).filter(
+                    Order.driver_id == driver_id).all()
     @classmethod
     def make_id_from_date_and_num(cls, date, num):
         return f'{date}|{num}'

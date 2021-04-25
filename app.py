@@ -1,9 +1,11 @@
+from markupsafe import Markup
 from flask import Flask, redirect
 
 from config import DB_URL, SECRET_KEY
 from db_setup import connect_db, db
 from users.__init__ import auth_views, user_views
 
+from deliveries.models import *
 
 app = Flask(__name__)
 
@@ -18,6 +20,9 @@ connect_db(app)
 # db.drop_all()
 # db.create_all()
 
+""" taken from 
+https://coderwall.com/p/4zcoxa/urlencode-filter-in-jinja2
+"""
 
 app.register_blueprint(auth_views, url_prefix="")
 app.register_blueprint(user_views, url_prefix="")
