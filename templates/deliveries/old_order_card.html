@@ -1,8 +1,15 @@
-<div class="col-12 align-self-center">
-    <span> #{{order['num']}}</span>
-    for
-    <a href="/customers/{{order['customer']['name']}}">
-        {{order['customer']['name']}}
-    </a>
-{% include 'deliveries/order_tip_input.html' %}
+<div class="container-fluid order-card">
+    <div class="row m-3 justify-content-md-center" style="text-align: center;">
+        <div class="col-12">
+            <div class="h3 mb-0 pb-0">
+                Order {{order['num']}} for
+                <a class="btn btn-primary btn-sm" href="/customers/{{order['customer']['id']}}">
+                    <small>{{order['customer']['name']}}</small>
+                </a>
+            </div>
+            </div>
+            <div class="col-12 col-6  mt-0">
+                {% include 'deliveries/order_tip_input.html'%}
+            </div>
+            </div>
 </div>

@@ -6,11 +6,11 @@
 <ul id="order_list" class="container-fluid">
     {% for (date, order_list) in all_orders.items() %}
     <li id="{{date}}" class="container-fluid ">
-        <span class="display-4 row">{{date|dateformat}}</span>
+        <span class="h4 row">{{date|dateformat}}</span>
         <ul class="row">
             {% for order in order_list %}
-            <li id="{{order['num']}}" class="col-12 col-lg-6 col-xl-4">
-                <div class="row">
+            <li id="{{order['num']}}" class="col-12 col-md-6 col-lg-6">
+                <div class="row justify-content-md-center">
                 {% include 'deliveries/old_order_card.html' %}
                 </div>
             </li>
@@ -22,6 +22,5 @@
 {% endblock %}
 {% block scripts %}
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-
 <script src="/static/update_tips.js"></script>
 {% endblock %}

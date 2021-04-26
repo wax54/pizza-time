@@ -1,21 +1,27 @@
 
 let tipInputs = document.querySelectorAll(".tip-input");
 for (let input of tipInputs) {
-    input.addEventListener("change", (evt) => {
-        updateTipFromInputId(evt.target.id);
-    });
-    input.parentElement.addEventListener("submit", tipSubmitted);
+    input.addEventListener("change", tipChanged);
+}
+async function tipChanged(evt) {
+    const input = evt.target;
+    const success = await updateTipFromInputId(input.id);
+    tipUpdateHTML(success, input);
+
 }
 
-async function tipSubmitted(evt) {
-    evt.preventDefault();
-    //get the input from the form
-    const input = evt.target.querySelector('input')
-    const success = await updateTipFromInputId(input.id);
+
+
+function tipUpdateHTML(result, input) {
     // TODO 
     // notify user that the tip has been updated in a non annoying way
-    if (success) {
-        input.value = "";
+    if (result) {
+        const tip = getTip(input);
+        //input.value = "";
+        input.placeholder = tip;
+    } else {
+        alert("something went wrong updating the Database.\
+        \nPlease try reloading and updating the tip again!");
     }
 }
 
@@ -25,19 +31,22 @@ async function updateTipFromInputId(id) {
 
     const num = input.dataset.num;
     const date = input.dataset.date;
-    let tip = input.value;
-    if (tip == '') {
-        tip = '0';
-    }
+    const tip = getTip(input);
     jsonPayload = { num, date, tip };
     const res = await axios.patch("/edit_order_tip", json = jsonPayload);
     const data = res.data;
     //let them know if the attempt failed
     if (data.status == true) {
-        console.log('hello')
-        input.placeholder = tip;
+        return true;
     } else {
-        alert("something went wrong updating the Database.\
-        \nPlease try reloading and updating the tip again!");
+        return false;
     }
+}
+
+function getTip(input) {
+    let tip = input.value;
+    if (tip == '') {
+        tip = '0.00';
+    }
+    return tip;
 }

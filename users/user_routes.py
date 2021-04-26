@@ -91,7 +91,6 @@ def edit_order_tip():
 @user_views.route('/edit_deliveries')
 def edit_delvieries():
     orders = Order.get_orders_for(g.user.id)
-    print(orders)
     return render_template("deliveries/list_all_orders.html", all_orders=orders)
 
 #TODO

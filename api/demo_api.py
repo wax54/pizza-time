@@ -1,5 +1,11 @@
 from random import randint
+import datetime
 
+DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"  # "Mon, 19 Apr 2021 00:00:00 GMT"
+
+
+def make_date(date):
+    return date.strftime(DATE_FORMAT)
 
 def get_schedules(email, token, ignore=[]):
     if email and token:
@@ -36,7 +42,7 @@ def get_delivery(email, token):
                            "name": "Kassandra Meyers",
                            "address": "12525 NE 32nd St Bellevue, WA. 98005",
                            "phone": "425-155-1443"}],
-               "date": "Mon, 19 Apr 2021 00:00:00 GMT"}
+               "date": make_date(datetime.date.today())}
     else:
         return False
 
