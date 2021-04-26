@@ -3,13 +3,16 @@
 {% block title %}All Orders!{% endblock %}
 
 {% block content %}
-<ul id="order_list">
+<ul id="order_list" class="container-fluid">
     {% for (date, order_list) in all_orders.items() %}
-    <li class="date-breaks">{{date}}
-        <ul>
+    <li id="{{date}}" class="container-fluid ">
+        <span class="display-4 row">{{date|dateformat}}</span>
+        <ul class="row">
             {% for order in order_list %}
-            <li id="{{order['num']}}">
+            <li id="{{order['num']}}" class="col-12 col-lg-6 col-xl-4">
+                <div class="row">
                 {% include 'deliveries/old_order_card.html' %}
+                </div>
             </li>
             {% endfor %}
         </ul>
