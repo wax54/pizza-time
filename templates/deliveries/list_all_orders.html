@@ -11,11 +11,17 @@
             <li id="{{order['num']}}">
                 {{order['num']}}
                 <a href="/customers/{{order['customer']['name']}}">{{order['customer']['name']}}</a>
-                <input type="number" step=".01" name="{{order['id']}}" value="{{order['tip']}}">
+                <input class="form-control tip-input" type="number" step=".01" id="{{order['num']}}-tip" data-date="{{order['date']}}"
+                    data-num="{{order['num']}}" name="{{order['num']}}" value="{{order['tip']}}">
             </li>
             {% endfor %}
         </ul>
     </li>
     {% endfor %}
 </ul>
+{% endblock %}
+{% block scripts %}
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script src="/static/edit_deliveries.js"></script>
 {% endblock %}

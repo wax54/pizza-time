@@ -59,6 +59,7 @@ def show_current_delviery():
         # this is real rough, should clean this up....
         for i in range(len(d.orders)):
             delivery['orders'][i]['tip'] = d.orders[i].tip
+            delivery['orders'][i]['date'] = d.orders[i].date
 
     return render_template('deliveries/current_delivery.html', delivery=delivery, name=g.user.name)
 
@@ -67,23 +68,30 @@ def show_current_delviery():
 def edit_order_tip():
     """edits a deliveries tip
     json input: id, tip """
-    json = request.json()
-    order_id = json('id')
+    json = request.json
+    order_num = json.get('num')
+    order_date = json.get('date')
+    print(order_date)
     tip = json.get('tip')
-    if order_id and tip:
-        order = Order.query.get(order_id)
+    # order_date = datetime.datetime.strptime(
+    #     order_date, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+    print(order_date)
+    if order_num and order_date and tip:
+        order = Order.get(num=order_num, date=order_date)
         if order:
             order.tip = tip
+            order.update_db()
             return jsonify(status=True, order=order.serialize())
         else:
-            return jsonify(status=False, message=f"No order Found with id:{order_id}")
+            return (jsonify(status=False, message=f"No order Found with num:{order_num} and date:{order_date}"), 404)
     else:
-        return jsonify(status=False, message="missing id or tip from json PATCH")
+        return jsonify(status=False, message="missing num or date or tip from json PATCH")
 
 
 @user_views.route('/edit_deliveries')
 def edit_delvieries():
     orders = Order.get_orders_for(g.user.id)
+    print(orders)
     return render_template("deliveries/list_all_orders.html", all_orders=orders)
 
 #TODO

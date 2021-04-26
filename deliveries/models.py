@@ -83,6 +83,10 @@ class Order(db.Model):
                 "driver_id": self.driver_id
                 }
 
+    def update_db(self):
+        db.session.add(self)
+        db.session.commit()
+
     @classmethod
     def get(cls, num, date):
         return cls.query.get((num, date))

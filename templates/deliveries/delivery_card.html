@@ -1,7 +1,7 @@
 {% if delivery %}
 <div class="row">
 {% for order in delivery['orders'] %}
-<div class="col-12 col-xl-6" id="{{order['num']}}">
+<div class="col-12 col-xl-6 my-2" id="{{order['num']}}-card">
     {% include 'deliveries/current_order_card.html' %}
 </div>
 {% endfor %}

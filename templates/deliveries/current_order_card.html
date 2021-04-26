@@ -12,13 +12,7 @@
             </a>
         </div>
         <div class="col-12">
-            <form class="input-group my-3" id="{{order['num']}}">
-                <div class="input-group-prepend">
-                    <label class="input-group-text" for="tip">Tip</label>
-                </div>
-                <input class="form-control form-control-lg" id="tip" name="tip" type="number"
-                    placeholder="{{order['tip']}}">
-            </form>
+            {% include 'deliveries/order_tip_input.html'%}
         </div>
             <div class="col-12">
                 <a class="btn btn-info btn-lg btn-block py-3" href="tel:{{order['phone']}}"> Call Customer:

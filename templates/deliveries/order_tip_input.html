@@ -1,0 +1,10 @@
+<form class="input-group my-3" class="input_form">
+    <div class="input-group-prepend">
+        <label class="input-group-text" for="{{order['num']}}">Tip</label>
+    </div>
+    <input class="form-control form-control-lg tip-input" id="{{order['num']}}-tip" data-num="{{order['num']}}"
+        data-date="{{order['date']}}" name="tip" type="number" step="0.01" placeholder="{{order['tip']}}">
+    <div class="input-group-append">
+        <input class="input-group-text btn btn-info" type="submit" value="Update">
+    </div>
+</form>
