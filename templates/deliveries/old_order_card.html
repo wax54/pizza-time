@@ -1,0 +1,5 @@
+<span class="display-4">{{order['num']}}</span>
+<a href="/customers/{{order['customer']['name']}}">{{order['customer']['name']}}</a>
+<!-- <input class="form-control tip-input" type="number" step=".01" id="{{order['num']}}-tip" data-date="{{order['date']}}"
+                                    data-num="{{order['num']}}" name="{{order['num']}}" value="{{order['tip']}}"> -->
+{% include 'deliveries/order_tip_input.html' %}
