@@ -14,9 +14,6 @@ class User(db.Model):
     shifts = db.relationship('Schedule',
                              backref='user')
 
-    def get_orders(self):
-        orders = self.orders
-        db.Query
     @classmethod
     def get(cls, pk):
         return cls.query.get(pk)

@@ -10,7 +10,9 @@ user = {
     "name": "John Bogus"
 }
 
+cust_id = Customer.make_id_from_phone("425-555-7843")
 customer = {
+    "id":  cust_id,
     "name": "Martha Jones"
 }
 
@@ -20,55 +22,106 @@ deliveries = [{"driver_id": 1},
               {"driver_id": 1},
               {"driver_id": 1},
               {"driver_id": 1}]
+
 orders = [{
-    "id": '2021-04-15|213',
+    "num": '213',
     "date": '2021-04-15',
     "tip": 10,
     "del_id": 1,
-    "cust_id": 1,
-    "driver_id": 1}, 
-          {
-    "id": '2021-04-15|218',
+    "cust_id": cust_id,
+    "driver_id": 1},
+    {
+    "num": '218',
     "date": '2021-04-15',
     "tip": 3,
     "del_id": 1,
-    "cust_id": 1,
-    "driver_id": 1}, 
-          {
-    "id": '2021-04-15|230',
+    "cust_id": cust_id,
+    "driver_id": 1},
+    {
+    "num": '230',
     "date": '2021-04-15',
     "tip": 5,
     "del_id": 2,
-    "cust_id": 1,
-    "driver_id": 1}, 
-          {
-    "id": '2021-04-16|103',
+    "cust_id": cust_id,
+    "driver_id": 1},
+    {
+    "num": '103',
     "date": '2021-04-16',
     "tip": 5,
     "del_id": 3,
-    "cust_id": 1,
-    "driver_id": 1}, 
-          {
-    "id": '2021-04-18|116',
+    "cust_id": cust_id,
+    "driver_id": 1},
+    {
+    "num": '116',
     "date": '2021-04-18',
     "tip": 5,
     "del_id": 4,
-    "cust_id": 1,
-    "driver_id": 1}, 
-          {
-    "id": '2021-04-18|213',
+    "cust_id": cust_id,
+    "driver_id": 1},
+    {
+    "num": '213',
     "date": '2021-04-18',
     "tip": 5,
     "del_id": 5,
-    "cust_id": 1,
-    "driver_id": 1}, 
-          {
-    "id": '2021-04-20|101',
+    "cust_id": cust_id,
+    "driver_id": 1},
+    {
+    "num": '101',
     "date": '2021-04-20',
     "tip": 5,
     "del_id": 6,
-    "cust_id": 1,
+    "cust_id": cust_id,
     "driver_id": 1}]
+
+# orders = [{
+#     "id": '2021-04-15|213',
+#     "date": '2021-04-15',
+#     "tip": 10,
+#     "del_id": 1,
+#     "cust_id": 1,
+#     "driver_id": 1},
+#           {
+#     "id": '2021-04-15|218',
+#     "date": '2021-04-15',
+#     "tip": 3,
+#     "del_id": 1,
+#     "cust_id": 1,
+#     "driver_id": 1},
+#           {
+#     "id": '2021-04-15|230',
+#     "date": '2021-04-15',
+#     "tip": 5,
+#     "del_id": 2,
+#     "cust_id": 1,
+#     "driver_id": 1},
+#           {
+#     "id": '2021-04-16|103',
+#     "date": '2021-04-16',
+#     "tip": 5,
+#     "del_id": 3,
+#     "cust_id": 1,
+#     "driver_id": 1},
+#           {
+#     "id": '2021-04-18|116',
+#     "date": '2021-04-18',
+#     "tip": 5,
+#     "del_id": 4,
+#     "cust_id": 1,
+#     "driver_id": 1},
+#           {
+#     "id": '2021-04-18|213',
+#     "date": '2021-04-18',
+#     "tip": 5,
+#     "del_id": 5,
+#     "cust_id": 1,
+#     "driver_id": 1},
+#           {
+#     "id": '2021-04-20|101',
+#     "date": '2021-04-20',
+#     "tip": 5,
+#     "del_id": 6,
+#     "cust_id": 1,
+#     "driver_id": 1}]
 
 schedules = [
     {"start": "Mon, 19 Apr 2021 17:00:00 GMT",

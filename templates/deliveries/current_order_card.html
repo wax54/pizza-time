@@ -1,0 +1,31 @@
+{% if order %}
+<!-- <h1>Delivery For {{order["name"]}}</h1> -->
+<div class="container-fluid order-card">
+    <div class="row" style="text-align: center;">
+        <div class="col-12">
+
+            <a class="btn btn-primary btn-lg btn-block"
+                href="https://www.google.com/maps/dir/?api=1&dir_action=navigate&destination={{order['address']|urlencode}}">
+                Order {{order['num']}} for <strong>{{order['name']}}</strong><br>
+                please deliver to<br>
+                <strong>{{order['address']}}</strong>
+            </a>
+        </div>
+        <div class="col-12">
+            <form class="input-group my-3" id="{{order['num']}}">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="tip">Tip</label>
+                </div>
+                <input class="form-control form-control-lg" id="tip" name="tip" type="number"
+                    placeholder="{{order['tip']}}">
+            </form>
+        </div>
+            <div class="col-12">
+                <a class="btn btn-info btn-lg btn-block py-3" href="tel:{{order['phone']}}"> Call Customer:
+                    {{order['phone']}}</a><br>
+            </div>
+            </div>
+</div>
+
+
+{% endif %}

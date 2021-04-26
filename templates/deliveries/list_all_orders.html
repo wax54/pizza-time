@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}All Orders!{% endblock %}
+
+{% block content %}
+<ul id="order_list">
+    {% for (date, order_list) in all_orders.items() %}
+    <li class="date-breaks">{{date}}
+        <ul>
+            {% for order in order_list %}
+            <li id="{{order['num']}}">
+                {{order['num']}}
+                <a href="/customers/{{order['customer']['name']}}">{{order['customer']['name']}}</a>
+                <input type="number" step=".01" name="{{order['id']}}" value="{{order['tip']}}">
+            </li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

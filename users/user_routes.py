@@ -1,6 +1,6 @@
 from flask import Blueprint, redirect, jsonify, render_template, session, flash, g, request
 from config import USER_KEY, API_SESSION_KEY
-from deliveries.models import Delivery
+from deliveries.models import Delivery, Order
 from users.models import User, Schedule, WeekCode
 from api import apis
 from functools import reduce
@@ -19,8 +19,6 @@ def urlencode(string):
 def add_user_to_g_or_redirect():
     """If we're logged in, add curr user to Flask global.
     otherwise, redirect them to login"""
-    print("*****************")
-    print(session)
     if USER_KEY in session:
         g.user = User.query.get(session[USER_KEY])
         g.api = apis[session[API_SESSION_KEY]]
@@ -85,8 +83,15 @@ def edit_order_tip():
 
 @user_views.route('/edit_deliveries')
 def edit_delvieries():
-    orders = g.user.get_orders()
-    return render_template("deliveries/list_orders.html", orders=orders)
+    orders = Order.get_orders_for(g.user.id)
+    return render_template("deliveries/list_all_orders.html", all_orders=orders)
+
+#TODO
+# right a view function that just displays the deliveries for a certain date range, or a certain day
+# @user_views.route('/edit_deliveries')
+# def edit_delvieries():
+#     orders = Order.get_orders_for(g.user.id)
+#     return render_template("deliveries/list_all_orders.html", all_orders=orders)
 
 
 @user_views.route('/dashboard')

@@ -1,8 +1,9 @@
 {% if delivery %}
+<div class="row">
 {% for order in delivery['orders'] %}
-<div id="{{order['num']}}">
-    {% include 'deliveries/order_card.html' %}
+<div class="col-12 col-xl-6" id="{{order['num']}}">
+    {% include 'deliveries/current_order_card.html' %}
 </div>
 {% endfor %}
-
+</div>
 {% endif %}

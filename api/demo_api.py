@@ -34,7 +34,7 @@ def get_delivery(email, token):
         # successful login
         return{"orders": [{"num": randint(100, 380),
                            "name": "Kassandra Meyers",
-                           "address": "12527 NE 32nd St Bellevue, WA. 98005",
+                           "address": "12525 NE 32nd St Bellevue, WA. 98005",
                            "phone": "425-155-1443"}],
                "date": "Mon, 19 Apr 2021 00:00:00 GMT"}
     else:
