@@ -1,10 +1,10 @@
-<div class="container-fluid order-card">
-    <div class="row m-3 justify-content-md-center" style="text-align: center;">
+<div class="container-fluid m-1 old-order-card">
+    <div class="row m-2 justify-content-md-center" style="text-align: center;">
         <div class="col-12">
             <div class="h3 mb-0 pb-0">
                 Order {{order['num']}} for
                 <a class="btn btn-primary btn-sm" href="/customers/{{order['customer']['id']}}">
-                    <small>{{order['customer']['name']}}</small>
+                    {{order['customer']['name']}}
                 </a>
             </div>
             </div>

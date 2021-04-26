@@ -1,1 +1,18 @@
-body{}
+ul{
+    list-style-type:  none;
+    padding-inline-start: 0px;
+}
+
+.old-order-card{
+    color: black;
+    background-color: blanchedalmond;
+    border: solid 2px brown;
+    border-radius: 15px;
+}
+
+.orders-for-date{
+    color: white;
+    background-color: rosybrown;
+    border: solid 2px darkred;
+    border-radius: 5px;
+}

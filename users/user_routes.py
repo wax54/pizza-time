@@ -1,6 +1,6 @@
 from flask import Blueprint, redirect, jsonify, render_template, session, flash, g, request
 from config import USER_KEY, API_SESSION_KEY
-from deliveries.models import Delivery, Order
+from deliveries.models import Delivery, Order, Customer
 from users.models import User, Schedule, WeekCode
 from api import apis
 from functools import reduce
@@ -60,6 +60,11 @@ def show_current_delviery():
         for i in range(len(d.orders)):
             delivery['orders'][i]['tip'] = d.orders[i].tip
             delivery['orders'][i]['date'] = d.orders[i].date
+            
+            customer = Customer.query.get(d.orders[i].cust_id)
+            delivery['orders'][i]['customer'] = {}
+            delivery['orders'][i]['customer']['id'] = customer.id
+            delivery['orders'][i]['customer']['notes'] = customer.notes
 
     return render_template('deliveries/current_delivery.html', delivery=delivery, name=g.user.name)
 
