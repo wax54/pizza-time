@@ -1,8 +1,8 @@
 from db_setup import db
 from deliveries.utils import get_date
 from users.models import User
+from customer.models import Customer
 from datetime import date as date_class
-import hashlib
 
 
 class Delivery(db.Model):
@@ -130,42 +130,6 @@ class Order(db.Model):
         return [{**order.serialize(), "customer": {**customer.serialize()}} for (order, customer) in order_array]
 
 
-class Customer(db.Model):
-    """A single customer"""
-    __tablename__ = "customers"
-    id = db.Column(db.String(32), primary_key=True)
-    name = db.Column(db.Text)
-    phone = db.Column(db.Text)
-    address = db.Column(db.Text)
-    notes = db.relationship('Note',
-                            backref='customer')
-
-    def serialize(self):
-        return {"id": self.id,
-                "name": self.name,
-                "notes": [n.serialize() for n in self.notes]
-                }
-
-    @classmethod
-    def make_id_from_phone(cls, phone):
-        return hashlib.md5(phone.encode()).hexdigest()
-
-    @classmethod
-    def create_or_get(cls, id, name, address=None, phone=None):
-        customer = cls.query.get(id)
-        if customer:
-            # update customer
-            if address:
-                customer.address = address
-            if phone:
-                customer.phone = phone
-        else:
-            customer = cls(id=id, name=name, address=address, phone=phone)
-        db.session.add(customer)
-        db.session.commit()
-        return customer
-
-
 class Note(db.Model):
     """A single note"""
     __tablename__ = "notes"
@@ -175,7 +139,29 @@ class Note(db.Model):
         'users.id', ondelete='CASCADE'), primary_key=True)
     note = db.Column(db.Text, nullable=False)
 
+    driver = db.relationship('User',
+                             backref='notes')
+
+    Customer = db.relationship('Customer',
+                               backref='notes')
+
     def serialize(self):
         return {"cust_id": self.cust_id,
                 "driver_id": self.driver_id,
                 "note": self.note}
+
+    @classmethod
+    def get(cls, cust_id, driver_id):
+        return cls.query.get((cust_id, driver_id))
+
+    @classmethod
+    def create_or_update_note(cls, cust_id, driver_id, new_note):
+        note = cls.get(cust_id=cust_id, driver_id=driver_id)
+        if note:
+            note.note = new_note
+        else:
+            note = cls(cust_id=cust_id, driver_id=driver_id, note=new_note)
+
+        db.session.add(note)
+        db.session.commit()
+        return note

@@ -1,6 +1,7 @@
 from flask import Blueprint, redirect, jsonify, render_template, session, flash, g, request
 from config import USER_KEY, API_SESSION_KEY
-from deliveries.models import Delivery, Order, Customer
+from deliveries.models import Delivery, Order, Note
+from customer.models import Customer
 from users.models import User, Schedule, WeekCode
 from api import apis
 from functools import reduce
@@ -12,9 +13,7 @@ user_views = Blueprint('user_routes', __name__)
 def urlencode(string):
     return urllib.parse.quote_plus(string)
 
-# This is run before anything in this file
-
-
+# This is run before any route in this file
 @user_views.before_request
 def add_user_to_g_or_redirect():
     """If we're logged in, add curr user to Flask global.
@@ -72,15 +71,13 @@ def show_current_delviery():
 @user_views.route('/edit_order_tip', methods=["PATCH"])
 def edit_order_tip():
     """edits a deliveries tip
-    json input: id, tip """
+    json input: num, date, tip """
     json = request.json
     order_num = json.get('num')
     order_date = json.get('date')
-    print(order_date)
     tip = json.get('tip')
     # order_date = datetime.datetime.strptime(
     #     order_date, '%Y-%m-%dT%H:%M:%S.%fZ').date()
-    print(order_date)
     if order_num and order_date and tip:
         order = Order.get(num=order_num, date=order_date)
         if order:
@@ -206,3 +203,31 @@ def update_schedule(user):
             Schedule.add_from_pag(schedules=schedules, user_id=user.id)
         if session[API_SESSION_KEY] == "demo":
             Schedule.add_from_demo(schedules=schedules, user_id=user.id)
+
+
+@user_views.route('/orders/note/update', methods=["POST"])
+def edit_order_note():
+    """adds a note to the customer of a delivery
+    json input: num, date, note """
+    json = request.json
+    order_num = json.get('num')
+    order_date = json.get('date')
+    new_note = json.get('note')
+    # order_date = datetime.datetime.strptime(
+    #     order_date, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+    print(order_date)
+    if order_num and order_date and new_note:
+        order = Order.get(num=order_num, date=order_date)
+        if order:
+            cust_id = order.cust_id
+            driver_id = order.driver_id
+            note = Note.create_or_update_note(
+                cust_id=cust_id, driver_id=driver_id, new_note=new_note)
+            if note:
+                return jsonify(status=True, note=note.serialize())
+            else:
+                return (jsonify(status=False, message="There was an error with the DB"), 500)
+        else:
+            return (jsonify(status=False, message=f"No order Found with num:{order_num} and date:{order_date}"), 404)
+    else:
+        return jsonify(status=False, message="missing num or date or note from json POST")

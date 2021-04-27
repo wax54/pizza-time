@@ -9,8 +9,6 @@ class User(db.Model):
     name = db.Column(db.Text, unique=True)
     email = db.Column(db.Text, nullable=False)
     token = db.Column(db.Text, nullable=False, unique=True)
-    notes = db.relationship('Note',
-                            backref='user')
     shifts = db.relationship('Schedule',
                              backref='user')
 

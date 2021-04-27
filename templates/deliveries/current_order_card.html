@@ -6,7 +6,7 @@
             <a class="btn btn-primary btn-lg btn-block"
                 href="https://www.google.com/maps/dir/?api=1&dir_action=navigate&destination={{order['address']|urlencode}}">
                 Order {{order['num']}} for <strong>{{order['name']}}</strong><br>
-                please deliver to<br>
+                Please Deliver To<br>
                 <strong>{{order['address']}}</strong>
             </a>
         </div>
@@ -18,17 +18,34 @@
                 {{order['phone']}}</a><br>
         </div>
         <div class="col-12">
-            <a class="btn btn-warning btn-lg btn-block py-3" href="/customers/{{order['customer']['id']}}/add_note">
+            <div class="alert alert-warning alert-lg alert-block py-3" style="text-align: left;">
                 {% if order["customer"]["notes"] %}
-                Notes:<br>
-                {% for note in order["customer"]["notes"] %}
-                <span class="h5 note"> {{note.note}} </span><br>
-                {% endfor %}
-        
+                <h4 class="alert-heading">Notes:</h4>
+                    {% for note in order["customer"]["notes"] %}
+                    <div class="note-alert alert alert-info">
+                        {% if note.driver.id != g.user.id %}
+                        <div class="row align-items-center my-1 ">
+                            <p class="h4 col-10 note "> {{note.note}}</p>
+                            <small class="col-2"> -{{note.driver.name}}</small>
+                        </div>
+                        {% else %}
+                        <div id="{{order['num']}}-personal-note" data-num="{{order['num']}}" data-date="{{order['date']}}" class="row my-1">
+                            <p class="note h4 col-10">{{note.note}}</p>
+                            <span class="note-edit-button btn btn-primary col-2">Edit</span>
+                        </div>
+                        <!-- The input element that'll get switched out with the alert if the edit button is clicked -->
+                        <div id="{{order['num']}}-edit-note-input" style="display: none;">
+                    
+                        </div>
+                    
+                        <!-- end of input element -->
+                        {% endif %}
+                    </div>
+                    {% endfor %}
                 {% else %}
-                No Notes for customer, Click to add one!
+                    No Notes for customer, Click to add one!
                 {% endif %}
-            </a>
+                </div>
         </div>
     </div>
 </div>
