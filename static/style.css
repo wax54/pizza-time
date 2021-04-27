@@ -1,3 +1,7 @@
+body{
+    background-color: var(--gray-dark);
+    color: var(--light)
+}
 ul{
     list-style-type:  none;
     padding-inline-start: 0px;
