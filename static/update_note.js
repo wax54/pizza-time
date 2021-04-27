@@ -6,6 +6,7 @@ async function start() {
     genericNoteInputContainer = await getNoteInputHTML();
 
     let editNoteButtons = document.querySelectorAll(".note-edit-button");
+    if (editNoteButtons.length)
     for (let button of editNoteButtons) {
         button.addEventListener("click", changeToEditNoteView);
     }
@@ -32,7 +33,7 @@ function changeToShowNoteView(orderNum) {
     const noteInput = document.getElementById(makeNoteInputContainerId(orderNum));
     //show the note
     //a little flimsy
-    personalNote.style.display = "block";
+    personalNote.style.display = "flex";
     //destroy the input
     noteInput.remove();
     console.log(orderNum, 'success!');

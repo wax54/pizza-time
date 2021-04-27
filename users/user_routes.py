@@ -63,7 +63,17 @@ def show_current_delviery():
             customer = Customer.query.get(d.orders[i].cust_id)
             delivery['orders'][i]['customer'] = {}
             delivery['orders'][i]['customer']['id'] = customer.id
-            delivery['orders'][i]['customer']['notes'] = customer.notes
+            delivery['orders'][i]['customer']['notes'] = []
+            driver_has_note = False
+            for note in customer.notes:
+                if note.driver_id == g.user.id:
+                    driver_has_note = True
+                    delivery['orders'][i]['customer']['personal_note'] = note
+                else:
+                    delivery['orders'][i]['customer']['notes'].append(note)
+            if driver_has_note == False:
+                delivery['orders'][i]['customer']['personal_note'] = False
+
 
     return render_template('deliveries/current_delivery.html', delivery=delivery, name=g.user.name)
 
@@ -215,7 +225,6 @@ def edit_order_note():
     new_note = json.get('note')
     # order_date = datetime.datetime.strptime(
     #     order_date, '%Y-%m-%dT%H:%M:%S.%fZ').date()
-    print(order_date)
     if order_num and order_date and new_note:
         order = Order.get(num=order_num, date=order_date)
         if order:
