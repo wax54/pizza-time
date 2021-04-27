@@ -1,5 +1,4 @@
 {% if order %}
-HELLO!{{order["customer"]["personal_note"]}}
 <!-- <h1>Delivery For {{order["name"]}}</h1> -->
 <div class="container-fluid order-card">
     <div class="row" style="text-align: center;">
@@ -22,10 +21,12 @@ HELLO!{{order["customer"]["personal_note"]}}
             <div class="alert alert-warning alert-lg alert-block py-3" style="text-align: left;">
                 <h4 class="alert-heading">Notes:</h4>
                 {% if order["customer"]["personal_note"] %}
+<div class="note-alert alert alert-info">
                 <div id="{{order['num']}}-personal-note" data-num="{{order['num']}}" data-date="{{order['date']}}" class="row my-1">
                     <p class="note h4 col-10">{{order["customer"]["personal_note"].note}}</p>
                     <span class="note-edit-button btn btn-primary col-2">Edit</span>
                 </div>
+</div>
                 {% endif %}
                     {% for note in order["customer"]["notes"] %}
                     <div class="note-alert alert alert-info">
@@ -36,9 +37,11 @@ HELLO!{{order["customer"]["personal_note"]}}
                         </div>
                         {% endfor %}
                         {% if order["customer"]["personal_note"] == False%}
+<div class="note-alert alert alert-info">
                         <div id="{{order['num']}}-personal-note" data-num="{{order['num']}}" data-date="{{order['date']}}" class="row my-1">
                             <p class="note h4 col-9"></p>
                             <span class="note-edit-button btn btn-primary btn-block col-3">Edit Note!</span>
+                        </div>
                         </div>
                 {% endif %}
                 </div>

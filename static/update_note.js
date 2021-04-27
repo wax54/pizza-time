@@ -84,13 +84,17 @@ async function updateNote(evt) {
     const orderNum = evt.target.dataset.num;
     const date = evt.target.dataset.date;
     const newNote = document.getElementById(makeNoteInputId(orderNum)).value;
-
-    const result = await sendNoteUpdateRequest(orderNum, date, newNote);
-    if (result.status) {
-        updateNoteText(orderNum, newNote);
+    if (newNote == '') {
+        //maybe change this to delete note functionality later
         changeToShowNoteView(orderNum);
     } else {
-        alert(result.message)
+        const result = await sendNoteUpdateRequest(orderNum, date, newNote);
+        if (result.status) {
+            updateNoteText(orderNum, newNote);
+            changeToShowNoteView(orderNum);
+        } else {
+            alert(result.message)
+        }
     }
 }
 

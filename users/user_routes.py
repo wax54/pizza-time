@@ -56,23 +56,49 @@ def show_current_delviery():
         #       it to the API Object(which currently has no Tip Attr)
 
         # this is real rough, should clean this up....
-        for i in range(len(d.orders)):
-            delivery['orders'][i]['tip'] = d.orders[i].tip
-            delivery['orders'][i]['date'] = d.orders[i].date
+        for curr_order in delivery['orders']:
+            db_order = None
+            #find the order in the db orders
+            #it feels like there is a better way to do this
+            # but its only every like 2 or three orders at a time
+            for order in d.orders:
+                if order.num == curr_order['num']:
+                    db_order = order
             
-            customer = Customer.query.get(d.orders[i].cust_id)
-            delivery['orders'][i]['customer'] = {}
-            delivery['orders'][i]['customer']['id'] = customer.id
-            delivery['orders'][i]['customer']['notes'] = []
+            curr_order['tip'] = db_order.tip
+            curr_order['date'] = db_order.date
+
+            customer = Customer.query.get(db_order.cust_id)
+            curr_order['customer'] = {}
+            curr_order['customer']['id'] = customer.id
+            curr_order['customer']['notes'] = []
             driver_has_note = False
             for note in customer.notes:
                 if note.driver_id == g.user.id:
                     driver_has_note = True
-                    delivery['orders'][i]['customer']['personal_note'] = note
+                    curr_order['customer']['personal_note'] = note
                 else:
-                    delivery['orders'][i]['customer']['notes'].append(note)
+                    curr_order['customer']['notes'].append(note)
             if driver_has_note == False:
                 delivery['orders'][i]['customer']['personal_note'] = False
+
+        # for i in range(len(d.orders)):
+        #     delivery['orders'][i]['tip'] = d.orders[i].tip
+        #     delivery['orders'][i]['date'] = d.orders[i].date
+
+        #     customer = Customer.query.get(d.orders[i].cust_id)
+        #     delivery['orders'][i]['customer'] = {}
+        #     delivery['orders'][i]['customer']['id'] = customer.id
+        #     delivery['orders'][i]['customer']['notes'] = []
+        #     driver_has_note = False
+        #     for note in customer.notes:
+        #         if note.driver_id == g.user.id:
+        #             driver_has_note = True
+        #             delivery['orders'][i]['customer']['personal_note'] = note
+        #         else:
+        #             delivery['orders'][i]['customer']['notes'].append(note)
+        #     if driver_has_note == False:
+        #         delivery['orders'][i]['customer']['personal_note'] = False
 
 
     return render_template('deliveries/current_delivery.html', delivery=delivery, name=g.user.name)

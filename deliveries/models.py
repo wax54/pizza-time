@@ -28,21 +28,23 @@ class Delivery(db.Model):
         ######
         # A little wasteful, good optimization possibility, I think
         for order in orders:
+            # maybe change this to a hash of the phone and address
+            customer_id = Customer.make_id_from_phone(order['phone'])
+            customer = Customer.create_or_get(
+                id=customer_id, name=order['name'].split(' ')[0])
+
             db_order = Order.get(order['num'], date)
             if db_order:
                 old_deliveries.add(db_order.del_id)
                 db_order.del_id = delivery.id
                 db_order.driver_id = driver_id
+                db_order.cust_id = customer_id
             else:
-                # maybe change this to a hash of the phone and address
-                customer_id = Customer.make_id_from_phone(order['phone'])
-                customer = Customer.create_or_get(
-                    id=customer_id, name=order['name'].split(' ')[0])
                 db_order = Order(
                     num=order['num'],
                     date=date,
                     del_id=delivery.id,
-                    cust_id=customer.id,
+                    cust_id=customer_id,
                     driver_id=driver_id)
             db.session.add(db_order)
         db.session.commit()
