@@ -1,9 +1,13 @@
+
+# NOTE THIS TEST WON'T WORK WITHOUT VALID PAGLIACCI DB CREDENTIALS LOCATED IN tests.api.pag_secrets.py
+from tests.api.pag_secrets import working_email, working_password
 from unittest import TestCase
 from app import app
 from db_setup import db
 from users.models import User
+from api import PAG_KEY as PAG_API_KEY, DEMO_KEY as DEMO_API_KEY
 import api.pag_api as api
-from config import USER_KEY
+from config import USER_SESSION_KEY
 
 # Use test database and don't clutter tests with SQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pag_api_test'
@@ -15,9 +19,6 @@ app.config['WTF_CSRF_ENABLED'] = False
 
 db.drop_all()
 db.create_all()
-
-working_email = "wax654@gmail.com"
-working_password = "Pizza11"
 
 
 class GetDeliveryTests(TestCase):
@@ -35,7 +36,7 @@ class GetDeliveryTests(TestCase):
         with app.test_client() as client:
             # Set logged in
             with client.session_transaction() as sess:
-                sess[USER_KEY] = self.user_id
+                sess[USER_SESSION_KEY] = self.user_id
             res = client.get('/pag/current_delivery')
             self.assertEqual(res.status_code, 200)
             html = res.get_data(as_text=True)
@@ -54,7 +55,7 @@ class LoginTests(TestCase):
     def test_post_returns_page_on_bad_creds(self):
         with app.test_client() as client:
             res = client.post(
-                '/login', data={'email': "testEmail", "password": "testPassword1"})
+                '/login', data={'email': "testEmail", "password": "testPassword1", "api": PAG__API_KEY})
             self.assertEqual(res.status_code, 200)
             html = res.get_data(as_text=True)
 
@@ -66,7 +67,7 @@ class LoginTests(TestCase):
 
         with app.test_client() as client:
             res = client.post(
-                '/login', data={'email': working_email, "password": working_password})
+                '/login', data={'email': "super@roo.com", "password": "password", "api": DEMO__API_KEY})
 
             self.assertEqual(res.status_code, 302)
             self.assertEqual(

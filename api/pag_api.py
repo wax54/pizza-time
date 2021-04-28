@@ -7,36 +7,43 @@ GET_SCHEDULES_EXTENSION = '/users/get_schedules'
 
 
 def get_schedules(email, token, ignore=[]):
+
+    session = request_with_retry()
     try:
-        res = request_with_retry().get(f'{BASE_URL}{GET_SCHEDULES_EXTENSION}',
-                                       json={
-                                           "email": email,
-                                           "token": token,
-                                           "ignore_codes": ignore
-                                       })
+        res = session.get(
+            f'{BASE_URL}{GET_SCHEDULES_EXTENSION}',
+            json={
+                "email": email,
+                "token": token,
+                "ignore_codes": ignore
+            })
         # no errors connecting to the server
         json = res.json()
-
+        session.close()
         if json['status']:
             # successful login
             return json['schedules']
         else:
             # server worked, but creds didn't
             return False
-    except Exception as x:
+    except:
         # DB Down (likely)
+        session.close()
         return False
 
 
 def get_delivery(email, token):
+    session = request_with_retry()
     try:
-        res = request_with_retry().get(f'{BASE_URL}{GET_DELIVERY_EXTENSION}',
-                                       json={
-                                           "email": email,
-                                           "token": token
-                                       })
+        res = session.get(f'{BASE_URL}{GET_DELIVERY_EXTENSION}',
+                          json={
+                              "email": email,
+                              "token": token
+                          })
         # no errors connecting to the server
         json = res.json()
+        # got result, close the session
+        session.close()
         if json['status']:
             # successful login
             return json['delivery']
@@ -45,6 +52,8 @@ def get_delivery(email, token):
             return False
     except:
         # DB Down (likely)
+        # close the session
+        session.close()
         return False
 
 
@@ -52,15 +61,18 @@ def login(email, password):
     # Harden this up. sometimes get 500 error when the server needs to unseal
     # gets 404 out of nowhere
     # maybe just retry after a second?
+
+    session = request_with_retry()
     try:
-        res = request_with_retry().post(f'{BASE_URL}{LOGIN_EXTENSION}',
-                                        json={
-                                            "email": email,
-                                            "password": password
-                                        })
+        res = session.post(f'{BASE_URL}{LOGIN_EXTENSION}',
+                           json={
+                               "email": email,
+                               "password": password
+                           })
 
         # no errors connecting to the server
         json = res.json()
+        session.close()
         if json['status']:
             # successful login
             return json['user']['token']
@@ -68,4 +80,5 @@ def login(email, password):
             # server worked, but creds didn't
             return False
     except:
+        session.close()
         return False

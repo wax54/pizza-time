@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, jsonify, render_template, session, flash, g, request
-from config import USER_KEY, API_SESSION_KEY
+from config import USER_SESSION_KEY, API_SESSION_KEY
 from deliveries.models import Delivery, Order, Note
 from customer.models import Customer
 from users.models import User, Schedule, WeekCode
@@ -18,8 +18,8 @@ def urlencode(string):
 def add_user_to_g_or_redirect():
     """If we're logged in, add curr user to Flask global.
     otherwise, redirect them to login"""
-    if USER_KEY in session:
-        g.user = User.query.get(session[USER_KEY])
+    if USER_SESSION_KEY in session:
+        g.user = User.query.get(session[USER_SESSION_KEY])
         g.api = apis[session[API_SESSION_KEY]]
         if not g.user:
             flash("Please Log In!")

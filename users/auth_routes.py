@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session, redirect, flash
-from config import USER_KEY, API_SESSION_KEY
+from config import USER_SESSION_KEY, API_SESSION_KEY
 from users.forms import UserLogin
 from users.models import User
 from api import apis
@@ -27,7 +27,7 @@ def login_to_pag():
             #save them in the DB
             u_id = User.create_or_update(email=email, token=token)
             #put the id in the session
-            session[USER_KEY] = u_id
+            session[USER_SESSION_KEY] = u_id
             session[API_SESSION_KEY] = api_key
 
             #redirect to curr_del page
