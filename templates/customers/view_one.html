@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}{{customer['name']}}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    {{customer['name']}}
+    <div class="col-12">
+        {% include 'customers/notes.html'%}
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="/static/update_note.js"></script>
+{% endblock %}

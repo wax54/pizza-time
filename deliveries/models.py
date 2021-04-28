@@ -74,6 +74,8 @@ class Order(db.Model):
         'users.id', ondelete='CASCADE'))
     driver = db.relationship('User',
                              backref='orders')
+    customer = db.relationship('Customer',
+                               backref='orders')
 
     def serialize(self):
         return {"num": self.num,
@@ -112,7 +114,7 @@ class Order(db.Model):
         result = db.session.query(
             Order, Customer).join(
                 Customer, Customer.id == Order.cust_id).filter(
-                    Order.driver_id == driver_id).order_by(Order.date, Order.num).all()
+                    Order.driver_id == driver_id).order_by(Order.date.desc(), Order.num).all()
         orders = Order.compile_orders_and_customers(result)
         orders_list = {}
 
@@ -143,7 +145,7 @@ class Note(db.Model):
     driver = db.relationship('User',
                              backref='notes')
 
-    Customer = db.relationship('Customer',
+    customer = db.relationship('Customer',
                                backref='notes')
 
     def serialize(self):

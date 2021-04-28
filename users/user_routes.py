@@ -63,26 +63,12 @@ def show_current_delviery():
             # it feels like there is a better way to do this
             # but its only every like 2 or three orders at a time
             for order in d.orders:
-
                 if order.num == curr_order['num']:
                     db_order = order
                     curr_order['tip'] = db_order.tip
                     curr_order['date'] = db_order.date
-
-                    customer = Customer.query.get(db_order.cust_id)
-                    curr_order['customer'] = {}
-                    curr_order['customer']['id'] = customer.id
-                    curr_order['customer']['notes'] = []
-                    driver_has_note = False
-                    for note in customer.notes:
-                        if note.driver_id == g.user.id:
-                            driver_has_note = True
-                            curr_order['customer']['personal_note'] = note
-                        else:
-                            curr_order['customer']['notes'].append(note)
-                    if driver_has_note == False:
-                        curr_order['customer']['personal_note'] = False
-
+                    curr_order['customer'] = db_order.customer
+                    
     return render_template('deliveries/current_delivery.html', delivery=delivery, name=g.user.name)
 
 

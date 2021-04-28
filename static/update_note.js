@@ -28,7 +28,7 @@ function updateNoteText(customer_id, text) {
     const note = noteContainer.querySelector('.note');
     const noteEditButton = noteContainer.querySelector('.note-edit-button');
     note.innerText = text;
-    if (text == '') {
+    if (text == false) {
         noteEditButton.innerText = "Add Note";
     } else {
         noteEditButton.innerText = "Edit";
@@ -44,7 +44,6 @@ function changeToShowNoteView(customer_id) {
     personalNote.style.display = "flex";
     //destroy the input
     noteInput.remove();
-    console.log(customer_id, 'success!');
 }
 
 function changeToEditNoteView(evt) {
@@ -68,15 +67,29 @@ function createCustomNoteInput(custId, defaultValue) {
     const containerId = makeNoteInputContainerId(custId);
     const noteInputContainer = genericNoteInputContainer.cloneNode(true);
     const noteForm = noteInputContainer.querySelector('.update-note-form');
-    const noteDeleteButton = noteInputContainer.querySelector('.note-cancel-button');
+    const noteDeleteButton = noteInputContainer.querySelector('.note-delete-button');
     const noteInput = noteForm.querySelector('.note-input');
     const noteLabel = noteForm.querySelector('.note-label');
 
     noteInputContainer.id = containerId;
     //add a listener to the form
-    noteForm.addEventListener("submit", updateNote)
+    noteForm.addEventListener("submit", (evt) => {
+        evt.preventDefault();
+        const custId = evt.target.dataset.custId;
+        const newNote = document.getElementById(makeNoteInputId(custId)).value;
+
+        if (newNote == '') {
+            cancelEditNote(custId);
+        }
+        else {
+            saveEditNote(custId, newNote);
+        }
+    });
     //add a listener to the delete button
-    noteDeleteButton.addEventListener("click", cancelEditNote)
+    noteDeleteButton.addEventListener("click", (evt) => {
+        const custId = evt.target.parentElement.dataset.custId;
+        deleteNote(custId)
+    });
 
     //load the data into the new form
     noteForm.dataset.custId = custId;
@@ -89,36 +102,34 @@ function createCustomNoteInput(custId, defaultValue) {
 }
 
 async function updateNote(evt) {
-    evt.preventDefault();
-    const custId = evt.target.dataset.custId;
-    const newNote = document.getElementById(makeNoteInputId(custId)).value;
-    console.log(evt)
-    console.log(custId)
 
-    if (newNote == '') {
-        //maybe change this to delete note functionality later
-        const result = await sendNoteDeleteRequest(custId)
-        if (result.status) {
-            updateNoteText(custId, newNote);
-            changeToShowNoteView(custId);
-        } else {
-            alert(result.message)
-        }
+}
+
+async function cancelEditNote(custId) {
+    changeToShowNoteView(custId);
+}
+
+async function saveEditNote(custId, newNote) {
+    const result = await sendNoteUpdateRequest(custId, newNote);
+    if (result.status) {
+        updateNoteText(custId, newNote);
+        changeToShowNoteView(custId);
     } else {
-        const result = await sendNoteUpdateRequest(custId, newNote);
-        if (result.status) {
-            updateNoteText(custId, newNote);
-            changeToShowNoteView(custId);
-        } else {
-            alert(result.message)
-        }
+        alert(result.message)
     }
 }
 
-async function cancelEditNote(evt) {
-    const custId = evt.target.parentElement.dataset.custId;
+async function deleteNote(custId) {
+    const result = await sendNoteDeleteRequest(custId)
+if (result.status) {
+    updateNoteText(custId, '');
     changeToShowNoteView(custId);
+} else {
+    alert(result.message)
 }
+}
+
+
 
 
 async function sendNoteUpdateRequest(customer_id, note) {

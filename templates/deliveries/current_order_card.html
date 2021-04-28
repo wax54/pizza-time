@@ -18,7 +18,8 @@
                 {{order['phone']}}</a><br>
         </div>
         <div class="col-12">
-            {% include 'deliveries/notes.html'%}
+            {% set customer=order['customer'] %}
+            {% include 'customers/notes.html'%}
         </div>
         </div>
         </div>

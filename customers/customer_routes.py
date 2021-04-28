@@ -1,6 +1,7 @@
-from flask import Blueprint, redirect, render_template
+from flask import Blueprint, redirect, render_template, session, g
 from config import USER_SESSION_KEY, API_SESSION_KEY
 from customers.models import Customer
+from users.models import User
 
 customer_views = Blueprint('customer_views', __name__)
 
@@ -22,4 +23,5 @@ def add_user_to_g_or_redirect():
 @customer_views.route('/<id>')
 def view_customer(id):
     customer = Customer.query.get(id)
-    return render_template("customer.html", customer=customer)
+
+    return render_template("customers/view_one.html", customer=customer)

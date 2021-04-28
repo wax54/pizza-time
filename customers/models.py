@@ -17,6 +17,11 @@ class Customer(db.Model):
                 "notes": [n.serialize() for n in self.notes]
                 }
 
+    def has_note_from(self, user_id):
+        for note in self.notes:
+            if note.driver_id == user_id:
+                return True
+        return False
     @classmethod
     def make_id_from_phone(cls, phone):
         return hashlib.md5(phone.encode()).hexdigest()
