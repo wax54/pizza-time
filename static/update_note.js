@@ -23,8 +23,8 @@ async function getNoteInputHTML() {
 
 }
 
-function updateNoteText(orderNum, text) {
-    const noteContainer = document.getElementById(makePersonalNoteDisplayId(orderNum));
+function updateNoteText(customer_id, text) {
+    const noteContainer = document.getElementById(makePersonalNoteDisplayId(customer_id));
     const note = noteContainer.querySelector('.note');
     const noteEditButton = noteContainer.querySelector('.note-edit-button');
     note.innerText = text;
@@ -35,27 +35,26 @@ function updateNoteText(orderNum, text) {
     }
 }
 
-function changeToShowNoteView(orderNum) {
+function changeToShowNoteView(customer_id) {
     //get the hidden note showing from the dom
-    const personalNote = document.getElementById(makePersonalNoteDisplayId(orderNum));
-    const noteInput = document.getElementById(makeNoteInputContainerId(orderNum));
+    const personalNote = document.getElementById(makePersonalNoteDisplayId(customer_id));
+    const noteInput = document.getElementById(makeNoteInputContainerId(customer_id));
     //show the note
     //a little flimsy
     personalNote.style.display = "flex";
     //destroy the input
     noteInput.remove();
-    console.log(orderNum, 'success!');
+    console.log(customer_id, 'success!');
 }
 
 function changeToEditNoteView(evt) {
     //get the element and the data
     const personalNote = evt.target.parentElement;
-    const orderNum = personalNote.dataset.num;
-    const date = personalNote.dataset.date;
+    const custId = personalNote.dataset.custId;
     //maybe should clean this up
     const personalNoteMsg = personalNote.querySelector('.note').innerText;
     //make a note input to replace the note view
-    const orderNoteContainer = createCustomNoteInput(orderNum, date, personalNoteMsg)
+    const orderNoteContainer = createCustomNoteInput(custId, personalNoteMsg)
 
     //hide the note showing view
     //a little flimsy
@@ -64,9 +63,9 @@ function changeToEditNoteView(evt) {
     personalNote.parentElement.append(orderNoteContainer);
 }
 
-function createCustomNoteInput(num, date, defaultValue) {
-    const inputId = makeNoteInputId(num);
-    const containerId = makeNoteInputContainerId(num);
+function createCustomNoteInput(custId, defaultValue) {
+    const inputId = makeNoteInputId(custId);
+    const containerId = makeNoteInputContainerId(custId);
     const noteInputContainer = genericNoteInputContainer.cloneNode(true);
     const noteForm = noteInputContainer.querySelector('.update-note-form');
     const noteDeleteButton = noteInputContainer.querySelector('.note-cancel-button');
@@ -80,8 +79,7 @@ function createCustomNoteInput(num, date, defaultValue) {
     noteDeleteButton.addEventListener("click", cancelEditNote)
 
     //load the data into the new form
-    noteForm.dataset.num = num;
-    noteForm.dataset.date = date;
+    noteForm.dataset.custId = custId;
     //input the values
     noteInput.id = inputId;
     noteInput.value = defaultValue;
@@ -92,23 +90,25 @@ function createCustomNoteInput(num, date, defaultValue) {
 
 async function updateNote(evt) {
     evt.preventDefault();
-    const orderNum = evt.target.dataset.num;
-    const date = evt.target.dataset.date;
-    const newNote = document.getElementById(makeNoteInputId(orderNum)).value;
+    const custId = evt.target.dataset.custId;
+    const newNote = document.getElementById(makeNoteInputId(custId)).value;
+    console.log(evt)
+    console.log(custId)
+
     if (newNote == '') {
         //maybe change this to delete note functionality later
-        const result = await sendNoteDeleteRequest(orderNum, date)
+        const result = await sendNoteDeleteRequest(custId)
         if (result.status) {
-            updateNoteText(orderNum, newNote);
-            changeToShowNoteView(orderNum);
+            updateNoteText(custId, newNote);
+            changeToShowNoteView(custId);
         } else {
             alert(result.message)
         }
     } else {
-        const result = await sendNoteUpdateRequest(orderNum, date, newNote);
+        const result = await sendNoteUpdateRequest(custId, newNote);
         if (result.status) {
-            updateNoteText(orderNum, newNote);
-            changeToShowNoteView(orderNum);
+            updateNoteText(custId, newNote);
+            changeToShowNoteView(custId);
         } else {
             alert(result.message)
         }
@@ -116,35 +116,34 @@ async function updateNote(evt) {
 }
 
 async function cancelEditNote(evt) {
-
-    const orderNum = evt.target.parentElement.dataset.num;
-    changeToShowNoteView(orderNum);
+    const custId = evt.target.parentElement.dataset.custId;
+    changeToShowNoteView(custId);
 }
 
 
-async function sendNoteUpdateRequest(num, date, note) {
+async function sendNoteUpdateRequest(customer_id, note) {
     const jsonPayload = {
-        num, date, note
+        customer_id, note
     }
-    const res = await axios.post('/orders/note/update', json = jsonPayload);
+    const res = await axios.post('/api/customers/note/update', json = jsonPayload);
     return res.data
 }
 
-async function sendNoteDeleteRequest(num, date) {
+async function sendNoteDeleteRequest(customer_id) {
     const jsonPayload = {
-        num, date
+        customer_id
     }
-    const res = await axios.post('/orders/note/delete', json = jsonPayload);
+    const res = await axios.post('/api/customers/note/delete', json = jsonPayload);
     return res.data
 }
 
 
-function makePersonalNoteDisplayId(num) {
-    return `${num}-personal-note`
+function makePersonalNoteDisplayId(uniqueString) {
+    return `${uniqueString}-personal-note`
 }
-function makeNoteInputId(num) {
-    return `${num}-note-input`
+function makeNoteInputId(uniqueString) {
+    return `${uniqueString}-note-input`
 }
-function makeNoteInputContainerId(num) {
-    return `${num}-edit-note`
+function makeNoteInputContainerId(uniqueString) {
+    return `${uniqueString}-edit-note`
 }

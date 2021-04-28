@@ -1,7 +1,7 @@
 from flask import Blueprint, redirect, jsonify, render_template, session, flash, g, request
 from config import USER_SESSION_KEY, API_SESSION_KEY
 from deliveries.models import Delivery, Order, Note
-from customer.models import Customer
+from customers.models import Customer
 from users.models import User, Schedule, WeekCode
 from api import apis
 from functools import reduce
@@ -14,6 +14,8 @@ def urlencode(string):
     return urllib.parse.quote_plus(string)
 
 # This is run before any route in this file
+
+
 @user_views.before_request
 def add_user_to_g_or_redirect():
     """If we're logged in, add curr user to Flask global.
@@ -57,49 +59,29 @@ def show_current_delviery():
 
         # this is real rough, should clean this up....
         for curr_order in delivery['orders']:
-            db_order = None
-            #find the order in the db orders
-            #it feels like there is a better way to do this
+            # find the order in the db orders
+            # it feels like there is a better way to do this
             # but its only every like 2 or three orders at a time
             for order in d.orders:
+
                 if order.num == curr_order['num']:
                     db_order = order
-            
-            curr_order['tip'] = db_order.tip
-            curr_order['date'] = db_order.date
+                    curr_order['tip'] = db_order.tip
+                    curr_order['date'] = db_order.date
 
-            customer = Customer.query.get(db_order.cust_id)
-            curr_order['customer'] = {}
-            curr_order['customer']['id'] = customer.id
-            curr_order['customer']['notes'] = []
-            driver_has_note = False
-            for note in customer.notes:
-                if note.driver_id == g.user.id:
-                    driver_has_note = True
-                    curr_order['customer']['personal_note'] = note
-                else:
-                    curr_order['customer']['notes'].append(note)
-            if driver_has_note == False:
-                curr_order['customer']['personal_note'] = False
-
-        # for i in range(len(d.orders)):
-        #     delivery['orders'][i]['tip'] = d.orders[i].tip
-        #     delivery['orders'][i]['date'] = d.orders[i].date
-
-        #     customer = Customer.query.get(d.orders[i].cust_id)
-        #     delivery['orders'][i]['customer'] = {}
-        #     delivery['orders'][i]['customer']['id'] = customer.id
-        #     delivery['orders'][i]['customer']['notes'] = []
-        #     driver_has_note = False
-        #     for note in customer.notes:
-        #         if note.driver_id == g.user.id:
-        #             driver_has_note = True
-        #             delivery['orders'][i]['customer']['personal_note'] = note
-        #         else:
-        #             delivery['orders'][i]['customer']['notes'].append(note)
-        #     if driver_has_note == False:
-        #         delivery['orders'][i]['customer']['personal_note'] = False
-
+                    customer = Customer.query.get(db_order.cust_id)
+                    curr_order['customer'] = {}
+                    curr_order['customer']['id'] = customer.id
+                    curr_order['customer']['notes'] = []
+                    driver_has_note = False
+                    for note in customer.notes:
+                        if note.driver_id == g.user.id:
+                            driver_has_note = True
+                            curr_order['customer']['personal_note'] = note
+                        else:
+                            curr_order['customer']['notes'].append(note)
+                    if driver_has_note == False:
+                        curr_order['customer']['personal_note'] = False
 
     return render_template('deliveries/current_delivery.html', delivery=delivery, name=g.user.name)
 
@@ -131,7 +113,7 @@ def edit_delvieries():
     orders = Order.get_orders_for(g.user.id)
     return render_template("deliveries/list_all_orders.html", all_orders=orders)
 
-#TODO
+# TODO
 # right a view function that just displays the deliveries for a certain date range, or a certain day
 # @user_views.route('/edit_deliveries')
 # def edit_delvieries():
@@ -240,52 +222,3 @@ def update_schedule(user):
         if session[API_SESSION_KEY] == "demo":
             Schedule.add_from_demo(schedules=schedules, user_id=user.id)
 
-
-@user_views.route('/orders/note/update', methods=["POST"])
-def edit_order_note():
-    """adds a note to the customer of a delivery
-    json input: num, date, note """
-    json = request.json
-    order_num = json.get('num')
-    order_date = json.get('date')
-    new_note = json.get('note')
-    # order_date = datetime.datetime.strptime(
-    #     order_date, '%Y-%m-%dT%H:%M:%S.%fZ').date()
-    if order_num and order_date and new_note:
-        order = Order.get(num=order_num, date=order_date)
-        if order:
-            cust_id = order.cust_id
-            driver_id = order.driver_id
-            note = Note.create_or_update_note(
-                cust_id=cust_id, driver_id=driver_id, new_note=new_note)
-            if note:
-                return jsonify(status=True, note=note.serialize())
-            else:
-                return (jsonify(status=False, message="There was an error with the DB"), 500)
-        else:
-            return (jsonify(status=False, message=f"No order Found with num:{order_num} and date:{order_date}"), 404)
-    else:
-        return jsonify(status=False, message="missing num or date or note from json POST")
-
-
-@user_views.route('/orders/note/delete', methods=["POST"])
-def delete_order_note():
-    """adds a note to the customer of a delivery
-    json input: num, date, note """
-    json = request.json
-    order_num = json.get('num')
-    order_date = json.get('date')
-    # order_date = datetime.datetime.strptime(
-    #     order_date, '%Y-%m-%dT%H:%M:%S.%fZ').date()
-    if order_num and order_date:
-        order = Order.get(num=order_num, date=order_date)
-        if order:
-            cust_id = order.cust_id
-            driver_id = order.driver_id
-            success = Note.delete(
-                cust_id=cust_id, driver_id=driver_id)
-            return jsonify(status=True)
-        else:
-            return (jsonify(status=False, message=f"No order Found with num:{order_num} and date:{order_date}"), 404)
-    else:
-        return jsonify(status=False, message="missing num or date or note from json POST")

@@ -1,7 +1,6 @@
 from db_setup import db
-from deliveries.utils import get_date
 from users.models import User
-from customer.models import Customer
+from customers.models import Customer
 from datetime import date as date_class
 
 
@@ -18,7 +17,7 @@ class Delivery(db.Model):
 
     @classmethod
     def save_delivery(cls, delivery, driver_id):
-        date = get_date(delivery['date'])
+        date = delivery['date']
         orders = delivery['orders']
         old_deliveries = set()
 

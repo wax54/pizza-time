@@ -3,7 +3,8 @@ from flask import Flask, redirect
 
 from config import DB_URL, SECRET_KEY
 from db_setup import connect_db, db
-from users.__init__ import auth_views, user_views
+from routes import auth_views, user_views, order_api, customer_api, customer_views
+
 import datetime
 from deliveries.models import *
 
@@ -31,6 +32,10 @@ def format_date(value, format='medium'):
 
 app.register_blueprint(auth_views, url_prefix="")
 app.register_blueprint(user_views, url_prefix="")
+app.register_blueprint(order_api, url_prefix="/api/orders")
+app.register_blueprint(customer_api, url_prefix="/api/customers")
+app.register_blueprint(customer_views, url_prefix="/customers")
+
 
 
 @app.route('/')

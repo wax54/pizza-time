@@ -5,7 +5,7 @@ from users.models import User
 
 
 # Use test database and don't clutter tests with SQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pag_api_test'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pizza_time_test'
 app.config['SQLALCHEMY_ECHO'] = True
 
 # Make Flask errors be real errors, rather than HTML pages with error info

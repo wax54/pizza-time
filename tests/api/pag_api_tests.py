@@ -1,24 +1,8 @@
 from unittest import TestCase
-from app import app
-from db_setup import db
 from api import pag_api
 
-#NOTE THIS TEST WON'T WORK WITHOUT VALID PAGLIACCI DB CREDENTIALS LOCATED IN tests.api.pag_secrets.py
+# NOTE THIS TEST WON'T WORK WITHOUT VALID PAGLIACCI DB CREDENTIALS LOCATED IN tests.api.pag_secrets.py
 from tests.api.pag_secrets import working_email, working_password
-
-# Use test database and don't clutter tests with SQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pag_api_test'
-app.config['SQLALCHEMY_ECHO'] = False
-
-# Make Flask errors be real errors, rather than HTML pages with error info
-app.config['TESTING'] = True
-app.config['WTF_CSRF_ENABLED'] = False
-
-db.drop_all()
-db.create_all()
-
-# token = pag_api.login(
-#     email=working_email, password=working_password)
 
 
 class LoginTests(TestCase):
@@ -53,7 +37,7 @@ class GetDeliveriesTests(TestCase):
             email=working_email, password=working_password)
 
     def test_valid_credentals_returns_delivery(self):
-        #NOTE delivery.orders may be just an empty list
+        # NOTE delivery.orders may be just an empty list
         delivery = pag_api.get_delivery(email=working_email, token=self.token)
         self.assertIsInstance(delivery.get('orders'), list)
 
@@ -83,7 +67,7 @@ class GetSchedulesTests(TestCase):
 
         self.assertIsInstance(schedules, list)
 
-        #this assumes the user has a schedule already
+        # this assumes the user has a schedule already
         self.assertIsInstance(schedules[0].get('schedule'), list)
         self.assertIsNotNone(schedules[0].get('pag_code'))
 
@@ -95,7 +79,7 @@ class GetSchedulesTests(TestCase):
             email="bad@email.com", token=self.token)
         self.assertFalse(schedules)
 
-    def test_does_not_return_codes_in_ignore_list(self):
+    def test_does_not_return_weeks_in_ignore_list(self):
         schedules = pag_api.get_schedules(
             email=working_email, token=self.token)
         week_codes = [week['pag_code'] for week in schedules]

@@ -1,6 +1,7 @@
 # Code Copied From
 # https://www.peterbe.com/plog/best-practice-with-retries-with-requests
 
+import datetime
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
@@ -25,3 +26,10 @@ def request_with_retry(
     session.mount('http://', adapter)
     session.mount('https://', adapter)
     return session
+
+
+DATE_FORMAT = "%a, %d %b %Y %H:%M:%S %Z"  # "Mon, 19 Apr 2021 00:00:00 GMT"
+
+
+def get_date(date):
+    return datetime.datetime.strptime(date, DATE_FORMAT).date()

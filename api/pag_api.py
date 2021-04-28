@@ -1,4 +1,4 @@
-from api.utils import request_with_retry
+from api.utils import request_with_retry, get_date
 
 BASE_URL = 'https://www.sam-the-dev.com/pag_api'
 LOGIN_EXTENSION = '/login'
@@ -44,8 +44,15 @@ def get_delivery(email, token):
         json = res.json()
         # got result, close the session
         session.close()
+
         if json['status']:
             # successful login
+            # if there are any orders to be had...
+            if json['delivery']['orders']:
+                # turn the date string into a date object
+                json['delivery']['date'] = get_date(json['delivery']['date'])
+                for order in json['delivery']['orders']:
+                    order['num'] = int(order['num'])
             return json['delivery']
         else:
             # server worked, but creds didn't

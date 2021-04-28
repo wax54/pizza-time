@@ -1,12 +1,14 @@
 <!-- The input element that'll get switched out with the note if the edit button is clicked -->
-<form class="update-note-form input-group my-3 container-fluid">
+<form class="update-note-form input-group my-3">
+    <div class="col-1"></div>
+    <input type="button" class="note-cancel-button btn btn-danger btn-block col-4 my-1" value="Cancel">
+    <div class="col-2"></div>
+    <input type="submit" class="note-update-button btn btn-primary btn-large col-4 my-1" value="Update">
+    <div class="col-1"></div>
     <div class="input-group col-12">
-    <div class="input-group-prepend">
-        <label class="note-label input-group-text" for="note-input">Note</label>
+        <div class="input-group-prepend">
+            <label class="note-label input-group-text" for="note-input">Note</label>
+        </div>
+        <input class="note-input form-control form-control-lg" id="note-input" name="note">
     </div>
-    <textarea class="note-input form-control form-control-lg" id="note-input" name="note">
-                                                                                                                                            </textarea>
-    </div>
-    <input type="submit" class="note-update-button btn btn-primary btn-block col-6 my-1" value="Update">
-    <input type="button" class="note-cancel-button btn btn-danger btn-block col-6 my-1" value="Cancel">
-</form>
+    </form>
