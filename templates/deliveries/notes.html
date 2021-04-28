@@ -1,20 +1,20 @@
-<div id="accordion-{{order['num']}}">
+<div id="accordion-{{order['customer']['id']}}">
     <div class="alert alert-warning alert-lg alert-block py-3">
-        <div class="alert-heading" id="NoteHeader-{{order['num']}}">
+        <div class="alert-heading" id="NoteHeader-{{order['customer']['id']}}">
             <h5 class="">
-                <button class="btn btn-secondary btn-block" data-toggle="collapse" data-target="#notes-{{order['num']}}"
-                    aria-expanded="true" aria-controls="notes-{{order['num']}}" style="text-align: center;">
+                <button class="btn btn-secondary btn-block" data-toggle="collapse" data-target="#notes-{{order['customer']['id']}}"
+                    aria-expanded="true" aria-controls="notes-{{order['customer']['id']}}" style="text-align: center;">
                     Notes
                 </button>
             </h5>
         </div>
 
-        <div id="notes-{{order['num']}}" class="collapse" aria-labelledby="NoteHeader-{{order['num']}}"
-            data-parent="#accordion-{{order['num']}}">
+        <div id="notes-{{order['customer']['id']}}" class="collapse" aria-labelledby="NoteHeader-{{order['customer']['id']}}"
+            data-parent="#accordion-{{order['customer']['id']}}">
 
             {% if order["customer"]["personal_note"] %}
             <div class="note-alert alert alert-info">
-                <div id="{{order['num']}}-personal-note" data-num="{{order['num']}}" data-date="{{order['date']}}"
+                <div id="{{order['customer']['id']}}-personal-note" data-cust-id="{{order['customer']['id']}}"
                     class="row my-1">
                     <p class="note h4 col-10">{{order["customer"]["personal_note"].note}}</p>
                     <span class="note-edit-button btn btn-primary col-2">Edit</span>
@@ -24,14 +24,14 @@
             {% for note in order["customer"]["notes"] %}
             <div class="note-alert alert alert-info">
                 <div class="row align-items-center my-1 ">
-                    <p class="h4 col-10 note "> {{note.note}}</p>
-                    <small class="col-2"> -{{note.driver.name}}</small>
+                    <p class="h4 col-9 note "> {{note.note}}</p>
+                    <small class="col-3"> -{{note.driver.name}}</small>
                 </div>
             </div>
             {% endfor %}
             {% if order["customer"]["personal_note"] == False%}
             <div class="note-alert alert alert-info">
-                <div id="{{order['num']}}-personal-note" data-num="{{order['num']}}" data-date="{{order['date']}}"
+                <div id="{{order['customer']['id']}}-personal-note" data-cust-id="{{order['customer']['id']}}"
                     class="row my-1">
                     <p class="note h4 col-9"></p>
                     <span class="note-edit-button btn btn-primary btn-block col-3">Add Note!</span>
