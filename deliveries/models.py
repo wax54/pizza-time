@@ -157,6 +157,16 @@ class Note(db.Model):
         return cls.query.get((cust_id, driver_id))
 
     @classmethod
+    def delete(cls, cust_id, driver_id):
+        note = cls.get(cust_id=cust_id, driver_id=driver_id)
+        if note:
+            db.session.delete(note)
+            db.session.commit()
+            return True
+        else:
+            return False
+
+    @classmethod
     def create_or_update_note(cls, cust_id, driver_id, new_note):
         note = cls.get(cust_id=cust_id, driver_id=driver_id)
         if note:

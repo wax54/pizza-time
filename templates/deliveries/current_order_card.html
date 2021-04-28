@@ -18,36 +18,10 @@
                 {{order['phone']}}</a><br>
         </div>
         <div class="col-12">
-            <div class="alert alert-warning alert-lg alert-block py-3" style="text-align: left;">
-                <h4 class="alert-heading">Notes:</h4>
-                {% if order["customer"]["personal_note"] %}
-<div class="note-alert alert alert-info">
-                <div id="{{order['num']}}-personal-note" data-num="{{order['num']}}" data-date="{{order['date']}}" class="row my-1">
-                    <p class="note h4 col-10">{{order["customer"]["personal_note"].note}}</p>
-                    <span class="note-edit-button btn btn-primary col-2">Edit</span>
-                </div>
-</div>
-                {% endif %}
-                    {% for note in order["customer"]["notes"] %}
-                    <div class="note-alert alert alert-info">
-                        <div class="row align-items-center my-1 ">
-                            <p class="h4 col-10 note "> {{note.note}}</p>
-                            <small class="col-2"> -{{note.driver.name}}</small>
-                        </div>
-                        </div>
-                        {% endfor %}
-                        {% if order["customer"]["personal_note"] == False%}
-<div class="note-alert alert alert-info">
-                        <div id="{{order['num']}}-personal-note" data-num="{{order['num']}}" data-date="{{order['date']}}" class="row my-1">
-                            <p class="note h4 col-9"></p>
-                            <span class="note-edit-button btn btn-primary btn-block col-3">Edit Note!</span>
-                        </div>
-                        </div>
-                {% endif %}
-                </div>
+            {% include 'deliveries/notes.html'%}
         </div>
-    </div>
-</div>
+        </div>
+        </div>
 
 
 {% endif %}
