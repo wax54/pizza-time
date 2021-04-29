@@ -81,12 +81,16 @@ class Note(db.Model):
 
     @classmethod
     def create_or_update_note(cls, cust_id, driver_id, new_note):
-        note = cls.get(cust_id=cust_id, driver_id=driver_id)
-        if note:
-            note.note = new_note
-        else:
-            note = cls(cust_id=cust_id, driver_id=driver_id, note=new_note)
+        try:
+            note = cls.get(cust_id=cust_id, driver_id=driver_id)
+            if note:
+                note.note = new_note
+            else:
+                note = cls(cust_id=cust_id, driver_id=driver_id, note=new_note)
 
-        db.session.add(note)
-        db.session.commit()
-        return note
+            db.session.add(note)
+            db.session.commit()
+            return note
+        except:
+            db.session.rollback()
+            return False
