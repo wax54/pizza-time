@@ -1,48 +1,207 @@
 from unittest import TestCase
 from app import app
 from db_setup import db
+
+from customers.models import *
+
 from users.models import User
+from customers.models import Note
 
 
 # Use test database and don't clutter tests with SQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pizza_time_test'
 app.config['SQLALCHEMY_ECHO'] = True
 
-# Make Flask errors be real errors, rather than HTML pages with error info
-app.config['TESTING'] = True
-app.config['WTF_CSRF_ENABLED'] = False
+
+cust1_data = {"id": '1',
+              "name": "testuser1",
+              "address": "Some Address",
+              "phone": "203-881-7843"}
+cust2_data = {"id": '2',
+              "name": "testuser2",
+              "address": "The Eifel Tower",
+              "phone": "872-164-2847"}
+
+db.drop_all()
+db.create_all()
+
+test_driver = User(email="test@email.com", token="testToken")
+cust1 = Customer(**cust1_data)
+cust2 = Customer(**cust2_data)
+
+db.session.add(cust1)
+db.session.add(cust2)
+db.session.add(test_driver)
+
+db.session.commit()
+
+test_driver_id = test_driver.id
+cust1_id = cust1.id
+cust2_id = cust2.id
 
 
-user1_data = {"email": "test1@email.com",
-              "token": "TESTTOKEN1", "name": "TESTUSER1"}
-user2_data = {"email": "test2@email.com",
-              "token": "TESTTOKEN2", "name": "TESTUSER2"}
-
-
-class LoginTests(TestCase):
+class NoteTests(TestCase):
     def setUp(self):
-        User.query.delete()
+        Note.query.delete()
+
+        self.note_text = "TEST_NOTE_TEXT"
+
+        note = Note(driver_id=test_driver_id,
+                    cust_id=cust1_id,
+                    note=self.note_text)
+        db.session.add(note)
         db.session.commit()
 
-    def test_create_or_update_creates_a_user(self):
-        u_id = User.create_or_update(**user1_data)
-        self.assertIsNotNone(u_id)
-        user = User.query.get(u_id)
-        self.assertEqual(user.name, user1_data["name"])
-        self.assertEqual(user.token, user1_data["token"])
-        self.assertEqual(user.email, user1_data["email"])
+    def test_note_has_expected_params(self):
+        note = Note.query.filter_by(note=self.note_text).first()
 
-    def test_create_or_update_updates_a_user(self):
-        u_id = User.create_or_update(**user1_data)
+        self.assertEqual(note.driver_id, test_driver_id)
+        self.assertEqual(note.cust_id, cust1_id)
+        self.assertEqual(note.note, self.note_text)
 
-        anoter_u_id = User.create_or_update(
-            email=user1_data['email'], token="SOMEOTHERTOKEN", name="A NICK NAME")
-        #same email, same user id
-        self.assertEqual(u_id, anoter_u_id)
-        user = User.query.get(u_id)
-        self.assertEqual(
-            user.name, "A NICK NAME")
-        self.assertEqual(
-            user.token, "SOMEOTHERTOKEN")
-        self.assertEqual(
-            user.email, user1_data["email"])
+        self.assertEqual(note.customer.id, cust1_id)
+        self.assertEqual(note.driver.id, test_driver_id)
+
+    def test_serialize_has_expected_params(self):
+        note = Note.query.filter_by(note=self.note_text).first()
+        note_serial = note.serialize()
+        self.assertEqual(note_serial['driver_id'], test_driver_id)
+        self.assertEqual(note_serial['cust_id'], cust1_id)
+        self.assertEqual(note_serial['note'], self.note_text)
+
+    def test_get(self):
+        note = Note.get(cust_id=cust1_id, driver_id=test_driver_id)
+        self.assertEqual(note.note, self.note_text)
+
+        bogus_note = Note.get(cust_id='nonId', driver_id=test_driver_id)
+        self.assertIsNone(bogus_note)
+
+    def test_delete(self):
+        note = Note.query.filter_by(note=self.note_text).first()
+        # the Note Exists!
+        self.assertIsNotNone(note)
+        Note.delete(cust_id=cust1_id, driver_id=test_driver_id)
+
+    def test_create_or_update_creates_a_note(self):
+
+        new_note_text = "NEW TEST TEXT"
+        # No note of this name exists in the Notes table
+        test_note = Note.query.filter_by(note=new_note_text).first()
+        self.assertIsNone(test_note)
+
+        note = Note.create_or_update_note(
+            cust_id=cust2_id,
+            driver_id=test_driver_id,
+            new_note=new_note_text)
+
+        self.assertEqual(note.note, new_note_text)
+        # now when we seach for it, it's there!
+        test_note = Note.query.filter_by(note=new_note_text).first()
+        self.assertIsNotNone(test_note)
+
+    def test_create_or_update_updates_a_note(self):
+        new_note_text = "NEW TEST TEXT"
+        old_note = Note.query.filter_by(note=self.note_text).first()
+        self.assertEqual(old_note.note, self.note_text)
+
+        note = Note.create_or_update_note(
+            cust_id=old_note.cust_id,
+            driver_id=old_note.driver_id,
+            new_note=new_note_text)
+
+        self.assertEqual(note.note, new_note_text)
+        # when we search for the note text in the DB, it is gone
+        test_note = Note.query.filter_by(note=self.note_text).first()
+        self.assertIsNone(test_note)
+
+
+class CustomerTests(TestCase):
+    def setUp(self):
+        self.cust1_note_text = "TEST_NOTE_TEXT"
+
+        Note.query.delete()
+        Customer.query.delete()
+
+        cust1 = Customer(**cust1_data)
+        cust2 = Customer(**cust2_data)
+        db.session.add(cust1)
+        db.session.add(cust2)
+        db.session.commit()
+
+        note = Note(driver_id=test_driver_id,
+                    cust_id=cust1_id,
+                    note=self.cust1_note_text)
+        db.session.add(note)
+        db.session.commit()
+
+        self.cust1_id = cust1.id
+        self.cust2_id = cust2.id
+
+    def test_customer_has_expected_params(self):
+        customer = Customer.query.get(self.cust1_id)
+
+        self.assertEqual(customer.id, cust1_data['id'])
+        self.assertEqual(customer.name, cust1_data['name'])
+        self.assertEqual(customer.phone, cust1_data['phone'])
+        self.assertEqual(customer.address, cust1_data['address'])
+
+        self.assertIsInstance(customer.notes, list)
+        self.assertEqual(customer.notes[0].note, self.cust1_note_text)
+
+        self.assertIsInstance(customer.orders, list)
+
+    def test_serialize_has_expected_params(self):
+        customer = Customer.query.get(self.cust1_id)
+        customer_serial = customer.serialize()
+
+        self.assertEqual(customer_serial['id'], cust1_data['id'])
+        self.assertEqual(customer_serial['name'], cust1_data['name'])
+        self.assertEqual(customer_serial['phone'], cust1_data['phone'])
+        self.assertEqual(customer_serial['address'], cust1_data['address'])
+
+        self.assertIsInstance(customer_serial['notes'], list)
+        self.assertEqual(customer_serial['notes']
+                         [0]['note'], self.cust1_note_text)
+
+    def test_has_note_from(self):
+        # cust1 has a note, so the result should be true
+        customer = Customer.query.get(self.cust1_id)
+        self.assertTrue(customer.has_note_from(test_driver_id))
+
+        # cust2 doesn't have a note, so the results should be false
+        customer = customer.query.get(self.cust2_id)
+        self.assertFalse(customer.has_note_from(test_driver_id))
+
+    def test_make_id_from_phone(self):
+        test_phone = '452-131-5131'
+        id = Customer.make_id_from_phone(test_phone)
+
+        self.assertEqual(id,
+                         hashlib.md5(test_phone.encode()).hexdigest())
+
+    def test_create_or_get_gets_a_customer(self):
+        new_name = "New Name"
+        test_customer = Customer.create_or_get(
+            
+            id=cust1_data['id'], name=new_name)
+        self.assertEqual(test_customer.name, new_name)
+        # just in case, we grab the customer from the db with the id,
+        #   and sure enough, the name is updated
+        cust1 = Customer.query.get(cust1_data['id'])
+        self.assertEqual(cust1.name, new_name)
+
+    def test_create_or_get_creates_a_customer(self):
+        new_customer_data = {"id": '3',
+                            "name": "testuser3",
+                            "address": "Somewhere, anywhere",
+                            "phone": "123-141-3132"}
+        # to show the customer doesn't exist
+        test_customer = Customer.query.get(new_customer_data['id'])
+        self.assertIsNone(test_customer)
+
+        customer = Customer.create_or_get(**new_customer_data)
+
+        self.assertEqual(customer.id, new_customer_data['id'])
+        # customer is now there
+        test_customer = Customer.query.get(new_customer_data['id'])
+        self.assertIsNotNone(test_customer)

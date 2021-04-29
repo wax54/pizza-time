@@ -1,7 +1,7 @@
 from flask import Blueprint, redirect, jsonify, render_template, session, flash, g, request
 from config import USER_SESSION_KEY, API_SESSION_KEY
-from deliveries.models import Delivery, Order, Note
-from customers.models import Customer
+from deliveries.models import Delivery, Order
+from customers.models import Customer, Note
 from users.models import User, Schedule, WeekCode
 from api import apis
 from functools import reduce

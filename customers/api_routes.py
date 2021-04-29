@@ -1,8 +1,7 @@
 from flask import Blueprint, redirect, jsonify, session, g, request
 from config import USER_SESSION_KEY, API_SESSION_KEY
-from customers.models import Customer
+from customers.models import Customer, Note
 from users.models import User
-from deliveries.models import Note
 
 customer_api = Blueprint('customer_api_routes', __name__)
 
