@@ -2,40 +2,33 @@ from unittest import TestCase
 from app import app
 from db_setup import db
 
-from customers.models import *
-
-from users.models import User
-from customers.models import Note
-
 
 # Use test database and don't clutter tests with SQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pizza_time_test'
 app.config['SQLALCHEMY_ECHO'] = False
 
 
-cust1_data = {"id": '1',
-              "name": "testuser1",
-              "address": "Some Address",
-              "phone": "203-881-7843"}
-cust2_data = {"id": '2',
-              "name": "testuser2",
-              "address": "The Eifel Tower",
-              "phone": "872-164-2847"}
+DEMO_DELIVERY = {"orders": [{"num": 112,
+                             "name": "Kassandra Meyers",
+                             "address": "12525 NE 32nd St Bellevue, WA. 98005",
+                            "phone": "425-155-1443"}],
+                 "date": datetime.date(2021, 4, 19)}
 
 
 def seed_db():
 
-
     db.session.rollback()
     global test_driver_id
     global cust1_id
-    global cust2_id
+    global delivery_id
+    global order_id
+
     # db.drop_all()
     # db.create_all()
     Customer.query.delete()
     User.query.delete()
     Note.query.delete()
-    
+
     db.session.commit()
 
     test_driver = User(email="test@email.com", token="testToken")
@@ -53,14 +46,11 @@ def seed_db():
     cust2_id = cust2.id
 
 
-
-
 class NoteTests(TestCase):
     @classmethod
     def setUpClass(cls):
         seed_db()
 
-    
     def setUp(self):
         Note.query.delete()
 
@@ -136,7 +126,7 @@ class NoteTests(TestCase):
 
 
 class CustomerTests(TestCase):
-        
+
     def setUp(self):
         seed_db()
         self.cust1_note_text = "TEST_NOTE_TEXT"

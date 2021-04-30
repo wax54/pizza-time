@@ -23,5 +23,4 @@ def add_user_to_g_or_redirect():
 @customer_views.route('/<id>')
 def view_customer(id):
     customer = Customer.query.get(id)
-
     return render_template("customers/view_one.html", customer=customer)

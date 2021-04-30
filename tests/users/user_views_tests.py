@@ -1,13 +1,10 @@
-
-# NOTE THIS TEST WON'T WORK WITHOUT VALID PAGLIACCI DB CREDENTIALS LOCATED IN tests.api.pag_secrets.py
-from tests.api.pag_secrets import working_email, working_password
-from unittest import TestCase
-from app import app
-from db_setup import db
-from users.models import User
+from config import USER_SESSION_KEY, API_SESSION_KEY
 from api import PAG_KEY as PAG_API_KEY, DEMO_KEY as DEMO_API_KEY
-import api.pag_api as api
-from config import USER_SESSION_KEY
+from users.models import User
+from db_setup import db
+from app import app
+from unittest import TestCase
+
 
 # Use test database and don't clutter tests with SQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pizza_time_test'
@@ -16,19 +13,37 @@ app.config['SQLALCHEMY_ECHO'] = False
 # Make Flask errors be real errors, rather than HTML pages with error info
 app.config['TESTING'] = True
 app.config['WTF_CSRF_ENABLED'] = False
+user_data = {
+    "name": "JERRY TEST",
+    "email": "test@email.com",
+    "token": "testToken"
+}
 
-db.drop_all()
-db.create_all()
+
+def seed_the_db():
+    global user_id
+    db.session.rollback()
+    db.drop_all()
+    db.create_all()
+
+    test_user = User(**user_data)
+
+    db.session.add(test_user)
+
+    db.session.commit()
+
+    # variables to reference
+    user_id = test_user.id
 
 
 class GetDeliveryTests(TestCase):
     def setUp(self):
-        token = api.login(email=working_email, password=working_password)
-        self.user_id = User.create_or_update(email=working_email, token=token)
+        seed_the_db()
+        self.url = '/current_delivery'
 
     def test_redirects_if_not_logged_in(self):
         with app.test_client() as client:
-            res = client.get('/pag/current_delivery')
+            res = client.get(self.url)
             self.assertEqual(res.status_code, 302)
             self.assertEqual(res.location, 'http://localhost/login')
 
@@ -36,12 +51,13 @@ class GetDeliveryTests(TestCase):
         with app.test_client() as client:
             # Set logged in
             with client.session_transaction() as sess:
-                sess[USER_SESSION_KEY] = self.user_id
-            res = client.get('/pag/current_delivery')
+                sess[USER_SESSION_KEY] = user_id
+                sess[API_SESSION_KEY] = DEMO_API_KEY
+            res = client.get(self.url)
             self.assertEqual(res.status_code, 200)
             html = res.get_data(as_text=True)
             self.assertIn(
-                f"Hello {working_email}, Good to see you again!", html)
+                f"Your Current Delivery!", html)
 
 
 class LoginTests(TestCase):
@@ -55,7 +71,7 @@ class LoginTests(TestCase):
     def test_post_returns_page_on_bad_creds(self):
         with app.test_client() as client:
             res = client.post(
-                '/login', data={'email': "testEmail", "password": "testPassword1", "api": PAG__API_KEY})
+                '/login', data={'email': "testEmail", "password": "testPassword1", "api": PAG_API_KEY})
             self.assertEqual(res.status_code, 200)
             html = res.get_data(as_text=True)
 
@@ -67,11 +83,11 @@ class LoginTests(TestCase):
 
         with app.test_client() as client:
             res = client.post(
-                '/login', data={'email': "super@roo.com", "password": "password", "api": DEMO__API_KEY})
+                '/login', data={'email': "super@roo.com", "password": "password", "api": DEMO_API_KEY})
 
             self.assertEqual(res.status_code, 302)
             self.assertEqual(
-                res.location, "http://localhost/pag/current_delivery")
+                res.location, "http://localhost/current_delivery")
 
-            user = User.query.filter_by(email=working_email).first()
+            user = User.query.filter_by(email="super@roo.com").first()
             self.assertIsNotNone(user)

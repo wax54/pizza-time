@@ -3,6 +3,7 @@ from config import USER_SESSION_KEY, API_SESSION_KEY
 from deliveries.models import Delivery, Order
 from customers.models import Customer, Note
 from users.models import User, Schedule, WeekCode
+from users.utils import get_dels_as_dow, get_total_hours, get_total_tips, update_schedule
 from api import apis
 from functools import reduce
 import datetime
@@ -68,30 +69,8 @@ def show_current_delviery():
                     curr_order['tip'] = db_order.tip
                     curr_order['date'] = db_order.date
                     curr_order['customer'] = db_order.customer
-                    
+
     return render_template('deliveries/current_delivery.html', delivery=delivery, name=g.user.name)
-
-
-@user_views.route('/edit_order_tip', methods=["PATCH"])
-def edit_order_tip():
-    """edits a deliveries tip
-    json input: num, date, tip """
-    json = request.json
-    order_num = json.get('num')
-    order_date = json.get('date')
-    tip = json.get('tip')
-    # order_date = datetime.datetime.strptime(
-    #     order_date, '%Y-%m-%dT%H:%M:%S.%fZ').date()
-    if order_num and order_date and tip:
-        order = Order.get(num=order_num, date=order_date)
-        if order:
-            order.tip = tip
-            order.update_db()
-            return jsonify(status=True, order=order.serialize())
-        else:
-            return (jsonify(status=False, message=f"No order Found with num:{order_num} and date:{order_date}"), 404)
-    else:
-        return jsonify(status=False, message="missing num or date or tip from json PATCH")
 
 
 @user_views.route('/edit_deliveries')
@@ -167,23 +146,6 @@ def show_stats():
     return render_template('stats_page.html', stats=stats)
 
 
-def get_dels_as_dow(dow_counter, order):
-    dow = order.date.weekday()
-    dow_counter[dow] += 1
-    return dow_counter
-
-
-def get_total_tips(total, order):
-    return total + order.tip
-
-
-def get_total_hours(total_hours, shift_to_add):
-    delta = shift_to_add.get_shift_length()
-    # 60 seconds in a min, 60 mins in a hour
-    hours = delta.total_seconds() / 60 / 60
-    return total_hours + hours
-
-
 @user_views.route('/show_schedule')
 def show_schedule():
     # update_schedule.
@@ -191,20 +153,3 @@ def show_schedule():
     # show all schedules in DB
     shifts = Schedule.get_future_shifts(g.user.id)
     return render_template('schedule_page.html', shifts=shifts)
-
-
-def update_schedule(user):
-    # check for old schedule codes
-    codes = WeekCode.get_codes_for_user(user.id)
-
-    # send old schedule codes with the request
-    schedules = g.api.get_schedules(
-        email=user.email, token=user.token, ignore=codes)
-    # if a new schedule pops up,
-
-    if schedules:
-        if session[API_SESSION_KEY] == "pag":
-            Schedule.add_from_pag(schedules=schedules, user_id=user.id)
-        if session[API_SESSION_KEY] == "demo":
-            Schedule.add_from_demo(schedules=schedules, user_id=user.id)
-

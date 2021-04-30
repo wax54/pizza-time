@@ -10,7 +10,7 @@ class LoginTests(TestCase):
         token = demo_api.login(
             email=demo_email, password=demo_password)
         self.assertTrue(token)
-        result = demo_api.get_delivery(email=working_email, token=token)
+        result = demo_api.get_delivery(email=demo_email, token=token)
         self.assertTrue(result)
 
     def test_login_with_empty_creds_returns_false(self):

@@ -8,10 +8,6 @@ from users.models import User
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///pizza_time_test'
 app.config['SQLALCHEMY_ECHO'] = True
 
-# Make Flask errors be real errors, rather than HTML pages with error info
-app.config['TESTING'] = True
-app.config['WTF_CSRF_ENABLED'] = False
-
 
 user1_data = {"email": "test1@email.com",
               "token": "TESTTOKEN1", "name": "TESTUSER1"}
