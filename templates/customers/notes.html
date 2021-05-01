@@ -3,7 +3,7 @@
     <div class="alert alert-warning alert-lg alert-block py-3">
         <div class="alert-heading" id="NoteHeader-{{customer['id']}}">
             <h5 class="">
-                <button class="btn btn-secondary btn-block" data-toggle="collapse" data-target="#notes-{{customer['id']}}"
+                <button class="btn btn-secondary btn-block larger-text" data-toggle="collapse" data-target="#notes-{{customer['id']}}"
                     aria-expanded="true" aria-controls="notes-{{customer['id']}}" style="text-align: center;">
                     Notes
                 </button>
@@ -17,13 +17,13 @@
                 <div class="note-alert alert alert-info">
                 {% if note.driver_id != g.user.id%}
                 <div class="row align-items-center my-1 ">
-                    <p class="h4 col-9 note "> {{note.note}}</p>
+                    <p class="h4 col-9 note larger-text"> {{note.note}}</p>
                     <small class="col-3"> -{{note.driver.name}}</small>
                 </div>
                 {% else %}
                 <div id="{{customer['id']}}-personal-note" data-cust-id="{{customer['id']}}"
                         class="row my-1">
-                        <p class="note h4 col-10">{{note.note}}</p>
+                        <p class="note h4 col-10 larger-text">{{note.note}}</p>
                         <span class="note-edit-button btn btn-primary col-2">Edit</span>
                     </div>
                 {% endif %}

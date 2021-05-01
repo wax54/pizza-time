@@ -7,6 +7,10 @@ ul{
     padding-inline-start: 0px;
 }
 
+.larger-text{
+    font-size: 2rem;
+}
+
 .old-order-card{
     color: black;
     background-color: blanchedalmond;

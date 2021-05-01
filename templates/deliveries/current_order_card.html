@@ -1,9 +1,9 @@
 {% if order %}
 <!-- <h1>Delivery For {{order["name"]}}</h1> -->
-<div class="container-fluid order-card">
+<div class="container-fluid order-card ">
     <div class="row" style="text-align: center;">
         <div class="col-12">
-            <a class="btn btn-primary btn-lg btn-block"
+            <a class="btn btn-primary btn-lg btn-block larger-text"
                 href="https://www.google.com/maps/dir/?api=1&dir_action=navigate&destination={{order['address']|urlencode}}">
                 Order {{order['num']}} for <strong>{{order['name']}}</strong><br>
                 Please Deliver To<br>
@@ -14,7 +14,7 @@
             {% include 'deliveries/order_tip_input.html'%}
         </div>
         <div class="col-12">
-            <a class="btn btn-info btn-lg btn-block py-3" href="tel:{{order['phone']}}"> Call Customer:
+            <a class="btn btn-info btn-lg btn-block py-3 larger-text" href="tel:{{order['phone']}}"> Call Customer:
                 {{order['phone']}}</a><br>
         </div>
         <div class="col-12">
