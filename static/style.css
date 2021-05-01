@@ -1,6 +1,7 @@
 body{
     background-color: var(--gray-dark);
-    color: var(--light)
+    color: var(--light);
+    font-size: 1.75rem;
 }
 ul{
     list-style-type:  none;
@@ -8,10 +9,10 @@ ul{
 }
 
 .larger-text{
-    font-size: 2rem;
+    font-size: 2.75rem;
 }
 .even-larger-text{
-    font-size: 2.5rem;
+    font-size: 3.25rem;
 }
 
 .old-order-card{
