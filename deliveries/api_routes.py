@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, session, g, request
 from config import USER_SESSION_KEY, API_SESSION_KEY
-from customers.models import Customer, Note
+from deliveries.models import Order
 from users.models import User
 
 order_api = Blueprint('order_api_routes', __name__)
@@ -16,7 +16,7 @@ def add_user_to_g_or_redirect():
         return jsonify(status=False, message="Not Logged In")
 
 
-@user_views.route('/edit_tip', methods=["PATCH"])
+@order_api.route('/edit_tip', methods=["PATCH"])
 def edit_order_tip():
     """edits a deliveries tip
     json input: num, date, tip """
