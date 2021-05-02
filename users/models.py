@@ -6,7 +6,7 @@ class User(db.Model):
     """A single user"""
     __tablename__ = "users"
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    name = db.Column(db.Text, unique=True)
+    name = db.Column(db.Text)
     email = db.Column(db.Text, nullable=False)
     token = db.Column(db.Text, nullable=False, unique=True)
     api_id = db.Column(db.Text, nullable=False)

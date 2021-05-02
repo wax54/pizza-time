@@ -16,13 +16,14 @@ def logout_user():
 @auth_views.route('/login')
 def choose_login():
     api_key = session.get(API_SESSION_KEY)
+    print("****************", api_key)
     if api_key:
         if api_key == DEMO_KEY:
-            redirect('/demo/login')
+            return redirect('/demo/login')
         if api_key == PAG_KEY:
-            redirect('/pag/login')
-        
-    return render_template("choose_login.html")
+            return redirect('/pag/login')
+    else:
+        return render_template("choose_login.html")
 
 @auth_views.route('/demo/login', methods=["GET", "POST"])
 def login_to_demo():
