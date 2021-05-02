@@ -28,7 +28,6 @@ def update_schedule(user):
     schedules = g.api.get_schedules(
         email=user.email, token=user.token, ignore=codes)
     # if a new schedule pops up,
-
     if schedules:
         if user.api_id == PAG_KEY:
             Schedule.add_from_pag(schedules=schedules, user_id=user.id)

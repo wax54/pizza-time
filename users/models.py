@@ -84,10 +84,13 @@ class Schedule(db.Model):
     def add_from_pag(cls, schedules, user_id):
 
         for week in schedules:
-            # for each week in schedules,
-            # add the pag_code to WeekCode
+            #weeks that are already in the DB
+            used_codes = WeekCode.get_codes_for_user(user_id, limit=10)
+            
             code = week['pag_code']
             if code not in used_codes:
+                # for each week in schedules,
+                # add the pag_code to WeekCode
                 WeekCode.add(code, user_id)
                 for shift in week['schedule']:
                     # for every shift, make a new schedule
