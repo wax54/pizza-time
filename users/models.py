@@ -87,7 +87,6 @@ class Schedule(db.Model):
             # for each week in schedules,
             # add the pag_code to WeekCode
             code = week['pag_code']
-            code = week['week_code']
             if code not in used_codes:
                 WeekCode.add(code, user_id)
                 for shift in week['schedule']:
