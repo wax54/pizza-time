@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Choose Your Api!{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-md-center">
+    <div class="col-md-7 col-lg-5">
+        <h2 class="join-message larger-text">Select Your Company</h2>
+
+        <form method="POST" id="login_form">
+            <a href="/demo/login" class="btn btn-light btn-block">Demo</a>
+            <a href="/pag/login" class="btn btn-danger btn-block">Pagliacci</a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

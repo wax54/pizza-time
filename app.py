@@ -40,4 +40,4 @@ app.register_blueprint(order_api, url_prefix="/api/orders")
 
 @app.route('/')
 def show_homepage():
-    return redirect('/login')
+    return redirect('/current_delivery')

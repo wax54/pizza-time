@@ -41,7 +41,6 @@ ul{
 
 .orders-for-date{
     color: white;
-    background-color: rosybrown;
-    border: solid 2px darkred;
+    background-color: #000044;
     border-radius: 5px;
 }

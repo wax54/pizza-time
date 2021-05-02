@@ -17,30 +17,36 @@
 <body>
 {% block navbar %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">Pizza Time</a>
+    <a class="navbar-brand normal-text" href="#">Pizza Time</a>
+
+    {% if g.user %}
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon larger-text"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/current_delivery">Current Delivery</a>
+            <li class="nav-item m-2">
+                <a class="btn btn-block btn-light normal-text" href="/current_delivery">Current Delivery</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/dashboard">Dashboard</a>
+            <li class="nav-item m-2">
+                <a class="btn btn-block btn-light normal-text" href="/dashboard">Dashboard</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/edit_deliveries">Edit Deliveries</a>
+            <li class="nav-item m-2">
+                <a class="btn btn-block btn-light normal-text" href="/edit_deliveries">Edit Deliveries</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/show_schedule">Schedule</a>
+            <li class="nav-item m-2">
+                <a class="btn btn-block btn-light normal-text" href="/show_schedule">Schedule</a>
             </li>
-            <li class="nav-item" style="float:right;">
-                <a class="nav-link" href="/login">Logout</a>
+            
+        </ul>
+        <ul class="navbar-nav navbar-right">
+            <li class="nav-item m-2" style="float:right;">
+                <a class="btn btn-block btn-danger normal-text" href="/logout">Logout</a>
             </li>
         </ul>
+        {% endif %}
     </div>
 </nav>
 

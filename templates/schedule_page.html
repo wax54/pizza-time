@@ -3,7 +3,8 @@
 {% block title %}Your Schedule{% endblock %}
 
 {% block content %}
-HELLO!
+Today is {{datetime.date.today()|dateformat}}
+{% if shifts %}
 <ul> Start - End - Type
     {% for shift in shifts %}
     <li>
@@ -11,4 +12,7 @@ HELLO!
     </li>
     {% endfor %}
 </ul>
+{% else %}
+<h1 class="h1">I Don't see any shifts here, Do You?</h1>
+{% endif %}
 {% endblock %}

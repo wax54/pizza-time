@@ -1,13 +1,15 @@
 from app import db
 from users.models import User, Schedule
 from deliveries.models import Delivery, Order, Customer
+from api import DEMO_KEY
 db.drop_all()
 db.create_all()
 
 user = {
-    "email": "fake@fake.com",
+    "email": "demo_user",
     "token": "faketoken",
-    "name": "John Bogus"
+    "name": "John Bogus",
+    "api_id": DEMO_KEY
 }
 
 cust_id = Customer.make_id_from_phone("425-555-7843")
@@ -165,3 +167,7 @@ for shift in schedules:
     db_shift = Schedule(**shift)
     db.session.add(db_shift)
     db.session.commit()
+
+
+# add a 'demo_user' user and add a note to the demo api order customer so the 
+#    person using the demo can see what a note left by another driver looks like

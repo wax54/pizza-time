@@ -33,7 +33,7 @@ async function updateTipFromInputId(id) {
     const date = input.dataset.date;
     const tip = getTip(input);
     jsonPayload = { num, date, tip };
-    const res = await axios.patch("api/orders/edit_tip", json = jsonPayload);
+    const res = await axios.patch("/api/orders/edit_tip", json = jsonPayload);
     const data = res.data;
     //let them know if the attempt failed
     if (data.status == true) {

@@ -1,9 +1,10 @@
 <div class="container-fluid m-1 old-order-card">
-    <div class="row m-2 justify-content-md-center" style="text-align: center;">
-        <div class="col-12">
+    <div class="row m-2 justify-content-md-center align-items-center" style="text-align: center;">
+        <div class="col-12 ">
             <div class="h3 mb-0 pb-0">
-                Order {{order['num']}} for
-                <a class="btn btn-primary btn-sm" href="/customers/{{order['customer']['id']}}">
+                <span class="larger-text">#{{order['num']}}
+                </span> for
+                <a class="btn btn-light" href="/customers/{{order['customer']['id']}}">
                     {{order['customer']['name']}}
                 </a>
             </div>

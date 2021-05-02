@@ -8,6 +8,7 @@ from api import apis
 from functools import reduce
 import datetime
 import urllib
+import datetime
 user_views = Blueprint('user_routes', __name__)
 
 
@@ -23,8 +24,9 @@ def add_user_to_g_or_redirect():
     otherwise, redirect them to login"""
     if USER_SESSION_KEY in session:
         g.user = User.query.get(session[USER_SESSION_KEY])
-        g.api = apis[session[API_SESSION_KEY]]
-        if not g.user:
+        if g.user:
+            g.api = apis[g.user.api_id]
+        else:
             flash("Please Log In!")
             return redirect('/login')
     else:
@@ -152,4 +154,4 @@ def show_schedule():
     update_schedule(g.user)
     # show all schedules in DB
     shifts = Schedule.get_future_shifts(g.user.id)
-    return render_template('schedule_page.html', shifts=shifts)
+    return render_template('schedule_page.html', shifts=shifts, datetime=datetime)

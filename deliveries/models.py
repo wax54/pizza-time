@@ -114,7 +114,7 @@ class Order(db.Model):
         result = db.session.query(
             Order, Customer).join(
                 Customer, Customer.id == Order.cust_id).filter(
-                    Order.driver_id == driver_id).order_by(Order.date.desc(), Order.num).all()
+                    Order.driver_id == driver_id).order_by(Order.date.desc(), Order.num.desc()).all()
         orders = Order.compile_orders_and_customers(result)
         orders_list = {}
 

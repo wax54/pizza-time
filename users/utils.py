@@ -1,3 +1,6 @@
+from flask import g
+from users.models import WeekCode, Schedule
+from api import PAG_KEY, DEMO_KEY
 
 
 def get_dels_as_dow(dow_counter, order):
@@ -27,7 +30,7 @@ def update_schedule(user):
     # if a new schedule pops up,
 
     if schedules:
-        if session[API_SESSION_KEY] == "pag":
+        if user.api_id == PAG_KEY:
             Schedule.add_from_pag(schedules=schedules, user_id=user.id)
-        if session[API_SESSION_KEY] == "demo":
+        if user.api_id == DEMO_KEY:
             Schedule.add_from_demo(schedules=schedules, user_id=user.id)
