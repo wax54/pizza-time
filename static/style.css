@@ -7,12 +7,29 @@ ul{
     list-style-type:  none;
     padding-inline-start: 0px;
 }
+.smaller-text{
+    font-size: 1.2rem;
+}
+
+.normal-text{
+    font-size: 1.75rem;
+}
+.big-text{
+    font-size: 2.25rem;
+}
 
 .larger-text{
     font-size: 2.75rem;
 }
 .even-larger-text{
     font-size: 3.25rem;
+}
+
+
+.current-order-card{
+    padding: 1rem;
+    background-color: white;
+    border-radius: 15px;
 }
 
 .old-order-card{

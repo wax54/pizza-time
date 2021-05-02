@@ -1,16 +1,19 @@
 {% if customer %}
 <div id="accordion-{{customer['id']}}">
-    <div class="alert alert-warning alert-lg alert-block py-3">
+    <div class="alert alert-warning alert-large p-1">
         <div class="alert-heading" id="NoteHeader-{{customer['id']}}">
             <h5 class="">
-                <button class="btn btn-secondary btn-block larger-text" data-toggle="collapse" data-target="#notes-{{customer['id']}}"
+                <button class="btn btn-secondary btn-block" data-toggle="collapse" data-target="#notes-{{customer['id']}}"
                     aria-expanded="true" aria-controls="notes-{{customer['id']}}" style="text-align: center;">
-                    Notes
+                    
+                        <span class=" larger-text">Notes</span>
+                        <small class="normal-text"> ({{customer.notes|length}})</small>
+                    
                 </button>
             </h5>
         </div>
 
-        <div id="notes-{{customer['id']}}" class="collapse" aria-labelledby="NoteHeader-{{customer['id']}}"
+        <div id="notes-{{customer['id']}}" class="collapse {% if customer.notes|length < 2 %} show {% endif %}" aria-labelledby="NoteHeader-{{customer['id']}}"
             data-parent="#accordion-{{customer['id']}}">
             {% set driver_has_note = customer.has_note_from(g.user.id) %}
             {% for note in customer.notes %}
@@ -22,9 +25,9 @@
                 </div>
                 {% else %}
                 <div id="{{customer['id']}}-personal-note" data-cust-id="{{customer['id']}}"
-                        class="row my-1">
+                        class="row align-items-center my-1">
                         <p class="note h4 col-10 larger-text">{{note.note}}</p>
-                        <span class="note-edit-button btn btn-primary col-2">Edit</span>
+                        <span class="note-edit-button btn btn-primary col-2 larger-text">Edit</span>
                     </div>
                 {% endif %}
 
@@ -33,9 +36,9 @@
             {% if driver_has_note == False%}
             <div class="note-alert alert alert-info">
                 <div id="{{customer['id']}}-personal-note" data-cust-id="{{customer['id']}}"
-                    class="row my-1">
+                    class="row align-items-center my-1">
                     <p class="note h4 col-9"></p>
-                    <span class="note-edit-button btn btn-primary btn-block col-3">Add Note!</span>
+                    <span class="note-edit-button btn btn-primary btn-block col-3 big-text">Add</span>
                 </div>
             </div>
             {% endif %}
