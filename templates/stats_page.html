@@ -1,23 +1,16 @@
+{% from 'dashboard/stat_card_macro.html' import stat_card %}
 {% extends 'base.html' %}
 
 {% block title %}Your Stats!{% endblock %}
 
 {% block content %}
-<h1>HELLO!</h1>
-{% for stat in stats %}
-<div class="stat" id="{{stat.name}}">
-    <h2 class="stat-title">{{stat['title']}}</h2>
+<h1>All Stats Are Estimates!</h1>
+<div class="row" id="stat-container">
 
-    {% if stat.get("desc")%}
-    <p class="stat-desc">{{stat['desc']}}</p>
-    {% endif %}
-    <span class="stat-html">
-        {% if stat.get("html")%}
-        {{stat['html']}}
-        {% else %}
-        {{stat['result']}}
-        {% endif %}
-    </span>
-</div>
+{% for stat in stats %}
+    <div class="col-12 col-lg-6">{{ stat_card(stat) }}</div>
 {% endfor %}
+
+{% include 'dashboard/dow_table.html' %}
+</div>
 {% endblock %}

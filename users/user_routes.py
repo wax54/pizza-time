@@ -3,7 +3,7 @@ from config import USER_SESSION_KEY, API_SESSION_KEY
 from deliveries.models import Delivery, Order
 from customers.models import Customer, Note
 from users.models import User, Schedule, WeekCode
-from users.utils import get_dels_as_dow, get_total_hours, get_total_tips, update_schedule
+from users.utils import get_dollar_by_dow, get_dels_by_dow, get_total_hours, get_total_tips, get_hours_by_dow, update_schedule
 from api import apis
 from functools import reduce
 import datetime
@@ -107,12 +107,22 @@ def show_stats():
     total_tips = reduce(get_total_tips, orders, 0)
     total_hours = reduce(get_total_hours, shifts, 0)
     try:
+        orders_per_hour = total_dels/total_hours
+    except ZeroDivisionError:
+        orders_per_hour = 0
+
+    try:
         tips_per_del = total_tips/total_dels
-        tips_per_hour = total_tips/total_hours
     except ZeroDivisionError:
         tips_per_del = 0
+        
+    try:
+        tips_per_hour = total_tips/total_hours
+    except ZeroDivisionError:
         tips_per_hour = 0
-    dels_per_day_of_week = reduce(get_dels_as_dow, orders, {
+        
+
+    dels_by_dow = reduce(get_dels_by_dow, orders, {
         0: 0,
         1: 0,
         2: 0,
@@ -121,31 +131,88 @@ def show_stats():
         5: 0,
         6: 0
     })
-
-    stats = [{
-        "title": "Total Orders",
+    
+    hours_by_dow = reduce(get_hours_by_dow, shifts, {
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 0
+    })
+    
+    dollars_by_dow = reduce(get_dollar_by_dow, orders, {
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 0
+    })
+    dollars_per_hour_by_dow = {}
+    dels_per_hour_by_dow = {}
+    
+    for (dow, hours) in hours_by_dow.items():
+        try:
+            tips_per_hour = dollars_by_dow[dow]/hours
+        except ZeroDivisionError:
+            tips_per_hour = 0
+        dollars_per_hour_by_dow[dow] = round(tips_per_hour, 2)
+        
+        try:
+            dels_per_hour = dels_by_dow[dow]/hours
+        except ZeroDivisionError:
+            dels_per_hour = 0
+        dels_per_hour_by_dow[dow] = round(dels_per_hour, 2)
+    
+    
+    dollars_per_del_by_dow = {}
+    for (dow, tips) in dollars_by_dow.items():
+        try:
+            tips_per_del = tips/dels_by_dow[dow]
+        except ZeroDivisionError:
+            tips_per_del = 0
+        dollars_per_del_by_dow[dow] = round(tips_per_del, 2)
+    
+    stats = [
+    {
+        "title": "TimeFrame",
+        "result": STATS_TIMEFRAME
+    }, {
+        "title": "Deliveries Recorded",
         "result": total_dels
     }, {
-        "title": "Total Tips Earned",
+        "title": "Tips",
         "result": f'${total_tips}'
     }, {
         "title": "Total hours Recorded",
-        "result": f'{total_hours}'
+        "result": f'{total_hours}Hrs'
+    }, 
+        {
+        "title": "Orders/Hour",
+        "desc": "Avg amount of dollars made per hour worked (according to your schedule)",
+        "result": f'${round(orders_per_hour, 2)}'
     }, {
         "title": "Dollars/Hour",
-        "desc": "Avg amount of dollars made hour worked (according to your schedule)",
+        "desc": "Avg amount of dollars made per hour worked (according to your schedule)",
         "result": f'${round(tips_per_hour, 2)}'
     },  {
-        "title": "tips/Delivery",
+        "title": "Dollars/Delivery",
         "desc": "Avg amount of tips made per delivery",
         "result": f'${round(tips_per_del, 2)}'
-    }, {
-        "title": "Orders per Day of Week",
-        "desc": "Number of orders taken per day of week in last STAT_TIMEFRAME",
-        "result": dels_per_day_of_week
     }
     ]
-    return render_template('stats_page.html', stats=stats)
+    
+    dow_avgs = [{"title": "Hours Worked", "data": hours_by_dow},
+                {"title":"Deliveries", "data":dels_by_dow},
+                {"title":"Dollars", "data": dollars_by_dow},
+                {"title": "Average $/Hr", "data": dollars_per_hour_by_dow},
+                {"title": "Average Orders/Hr", "data": dels_per_hour_by_dow},
+                {"title": "Average $/Order", "data": dollars_per_del_by_dow}
+                ]
+    return render_template('stats_page.html', stats=stats, dow_stats=dow_avgs)
 
 
 @user_views.route('/show_schedule')

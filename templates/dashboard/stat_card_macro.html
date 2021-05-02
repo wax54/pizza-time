@@ -1,0 +1,17 @@
+{% macro stat_card(stat) %}
+<div class="stat" id="{{stat.name}}">
+    <h2 class="stat-title display-4">{{stat['title']}}</h2>
+
+    {% if stat.get("desc")%}
+
+    <span class="stat-desc">{{stat['desc']}}</span>
+    {% endif %}
+    <span class="stat-html display-4">
+        {% if stat.get("html")%}
+        {{stat['html']}}
+        {% else %}
+        {{stat['result']}}
+        {% endif %}
+    </span>
+</div>
+{% endmacro %}

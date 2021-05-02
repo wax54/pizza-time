@@ -57,6 +57,14 @@ class Schedule(db.Model):
         returns a datetime.timedelta object """
         return self.end-self.start
 
+
+    def get_shift_hours(self):
+        """gets the length of the shift in hours """
+        
+        delta = self.get_shift_length()
+        # 60 seconds in a min, 60 mins in a hour
+        return delta.total_seconds() / 60 / 60
+
     @classmethod
     def get_future_shifts(cls, user_id):
         return cls.query.filter(

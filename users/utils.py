@@ -2,11 +2,23 @@ from flask import g
 from users.models import WeekCode, Schedule
 from api import PAG_KEY, DEMO_KEY
 
+def get_dollar_by_dow(dow_counter, order):
+    dow = order.date.weekday()
+    dow_counter[dow] = get_total_tips(dow_counter[dow], order)
+    return dow_counter
 
-def get_dels_as_dow(dow_counter, order):
+def get_dels_by_dow(dow_counter, order):
     dow = order.date.weekday()
     dow_counter[dow] += 1
     return dow_counter
+
+
+def get_hours_by_dow(dow_counter, shift):
+    hours = shift.get_shift_hours()
+    dow = shift.start.weekday()
+    dow_counter[dow] += hours
+    return dow_counter
+
 
 
 def get_total_tips(total, order):
@@ -14,9 +26,7 @@ def get_total_tips(total, order):
 
 
 def get_total_hours(total_hours, shift_to_add):
-    delta = shift_to_add.get_shift_length()
-    # 60 seconds in a min, 60 mins in a hour
-    hours = delta.total_seconds() / 60 / 60
+    hours = shift_to_add.get_shift_hours()
     return total_hours + hours
 
 
