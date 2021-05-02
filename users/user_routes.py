@@ -156,10 +156,10 @@ def show_stats():
     
     for (dow, hours) in hours_by_dow.items():
         try:
-            tips_per_hour = dollars_by_dow[dow]/hours
+            dollars_per_hour = dollars_by_dow[dow]/hours
         except ZeroDivisionError:
-            tips_per_hour = 0
-        dollars_per_hour_by_dow[dow] = round(tips_per_hour, 2)
+            dollars_per_hour = 0
+        dollars_per_hour_by_dow[dow] = round(dollars_per_hour, 2)
         
         try:
             dels_per_hour = dels_by_dow[dow]/hours
@@ -169,12 +169,12 @@ def show_stats():
     
     
     dollars_per_del_by_dow = {}
-    for (dow, tips) in dollars_by_dow.items():
+    for (dow, dollars) in dollars_by_dow.items():
         try:
-            tips_per_del = tips/dels_by_dow[dow]
+            dollars_per_del = dollars/dels_by_dow[dow]
         except ZeroDivisionError:
-            tips_per_del = 0
-        dollars_per_del_by_dow[dow] = round(tips_per_del, 2)
+            dollars_per_del = 0
+        dollars_per_del_by_dow[dow] = round(dollars_per_del, 2)
     
     stats = [
     {
@@ -193,7 +193,7 @@ def show_stats():
         {
         "title": "Orders/Hour",
         "desc": "Avg amount of dollars made per hour worked (according to your schedule)",
-        "result": f'${round(orders_per_hour, 2)}'
+        "result": f'{round(orders_per_hour, 2)}'
     }, {
         "title": "Dollars/Hour",
         "desc": "Avg amount of dollars made per hour worked (according to your schedule)",
