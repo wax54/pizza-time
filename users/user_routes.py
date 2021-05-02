@@ -102,7 +102,7 @@ def show_stats():
     # STATS TIMEFRAME STUFF!
     shifts = Schedule.get_last(user_id=u_id, delta=STATS_TIMEFRAME)
     orders = [o for o in all_orders if within_stat_timeframe(o.date)]
-
+    
     total_dels = len(orders)
     total_tips = reduce(get_total_tips, orders, 0)
     total_hours = reduce(get_total_hours, shifts, 0)
@@ -178,8 +178,8 @@ def show_stats():
     
     stats = [
     {
-        "title": "TimeFrame",
-        "result": STATS_TIMEFRAME
+        "title": "Time Frame",
+        "result": f'Last {STATS_TIMEFRAME.days} Days'
     }, {
         "title": "Deliveries Recorded",
         "result": total_dels

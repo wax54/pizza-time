@@ -49,7 +49,7 @@ ul{
     color:black;
     text-align: center;
     padding: 1rem;
-    margin: 2rem;
+    margin: 1rem;
     background-color: lemonchiffon;
     border: solid 5px goldenrod;
     border-radius: 20px;
@@ -76,4 +76,8 @@ ul{
 
 .stat:hover .stat-desc {
   visibility: visible;
+}
+
+#dow_table{
+    margin: 1rem;
 }
