@@ -14,37 +14,43 @@ You enter the site through /<api>/login. Once logged in, you are dropped on the 
 
 ![Example Of /current_delivery page](https://i.ibb.co/QXR4cVS/curr-dels.png)
 
-On the /current_delivery page, If you have a delivery, All orders on the delivery are displayed. Each order displays all relevant information - customer address, customer name, customer phone number, order tip, A link to google maps navigation to the orders address, and a link to dial the customers number.
+#### On the /current_delivery page,
+ If you have a delivery, All orders on the delivery are displayed. Each order displays all relevant information - customer address, customer name, customer phone number, order tip, A link to google maps navigation to the orders address, and a link to dial the customers number.
 
 Otherwise, you can use the Nav bar at the top of the screen to go to either dashboard, edit_deliveries, show_schedule, or logout.
 
 ![Example Of /edit_deliveries page](https://i.ibb.co/71v1sMy/edit-delivery.png)
-On the /edit_deliveries page, a driver can edit tips on all previous deliveries stored
-in the DB.
+
+#### On the /edit_deliveries page, 
+ a driver can edit tips on all previous deliveries stored in the DB.
 
 ![Example Of /schedule page](https://i.ibb.co/mz6V8DH/Screenshot-at-2021-05-02-19-19-12.png)
-On the /show_schedules page, The schedule for the current user is displayed.
+
+####On the /show_schedules page,
+ The schedule for the current user is displayed.
 
 ![Example Of /dashboard page](https://i.ibb.co/NCpL58c/dashboard.png)
-On the /Dashboard page, a driver can view their stats
+
+#### On the /Dashboard page,
+ a driver can view their stats
 
 
 
-This API is set up to work out of the box with 2 API's
+#### This API is set up to work out of the box with 2 API's
 - Demo Api (Internally Created)
 - Pag Api [link](https://www.sam-the-dev.com/)*
 
  *You must be an employee of Pagliacci Pizza to use the Pag Api
 
 
-This Project uses 
+#### Programs This Project Uses
 - Python as the server language
 - Gunicorn as a WSGI
 - Flask as a Web Framework
 - Postgresql as a DB
 - SqlAlchemy as an ORM
 
-To get this site up and running on a local linux server, you will need to have postgresql installed.
+#### To get this site up and running on a local linux server, you will need to have postgresql installed.
 Simply follow these steps
 1. Clone the repo,  
 2. Create a venv (and source it),  
