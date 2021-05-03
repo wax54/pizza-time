@@ -38,7 +38,8 @@ def seed_db():
     
     db.session.commit()
 
-    test_driver = User(email="test@email.com", token="testToken")
+    test_driver = User(email="test@email.com",
+                       token="testToken", api_id='demo')
     cust1 = Customer(**cust1_data)
     cust2 = Customer(**cust2_data)
 

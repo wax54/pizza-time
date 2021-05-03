@@ -24,7 +24,7 @@ def seed_db():
     db.drop_all()
     db.create_all()
 
-    user_data = {"email": "test@email.com", "token": "testToken"}
+    user_data = {"email": "test@email.com", "token": "testToken", api_id='demo'}
 
     cust_data = {"id": '1',
                  "name": "testuser1",

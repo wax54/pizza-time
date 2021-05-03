@@ -33,7 +33,7 @@ def seed_db():
     db.drop_all()
     db.create_all()
 
-    test_driver = User(email="test@email.com", token="testToken")
+    test_driver = User(email="test@email.com", token="testToken", api_id="demo")
     cust1 = Customer(**cust1_data)
 
     db.session.add(cust1)

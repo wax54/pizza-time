@@ -16,7 +16,8 @@ app.config['WTF_CSRF_ENABLED'] = False
 user_data = {
     "name": "JERRY TEST",
     "email": "test@email.com",
-    "token": "testToken"
+    "token": "testToken", 
+    "api_id" : 'demo'
 }
 
 
