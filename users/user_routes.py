@@ -9,7 +9,7 @@ from functools import reduce
 import datetime
 import urllib
 import datetime
-import pytz
+import tz_utils
 
 user_views = Blueprint('user_routes', __name__)
 
@@ -224,9 +224,8 @@ def show_stats():
 def show_schedule():
     # update_schedule.
     update_schedule(g.user)
-    # show all schedules in DB
+    # show all shifts from today or later
     shifts = Schedule.get_future_shifts(g.user.id)
-    pacific = pytz.timezone('US/Pacific')
-    utc_now = pytz.utc.localize(datetime.datetime.utcnow())
-    now = utc_now.astimezone(pacific)
+    now = tz_utils.get_now_in('US/Pacific')
     return render_template('schedule_page.html', shifts=shifts, today=now)
+

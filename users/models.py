@@ -69,12 +69,13 @@ class Schedule(db.Model):
 
     @classmethod
     def get_future_shifts(cls, user_id):
-        """returns a list of shifts for user_id that start on or after today"""
+        """returns a list of shifts for user_id 
+        that end on or after today"""
         #get a timestamp for the beginning of the day
         today = datetime.date.today()
         return cls.query.filter(
             Schedule.user_id == user_id,
-            Schedule.start >= today
+            Schedule.end >= today
         ).all()
 
     @classmethod

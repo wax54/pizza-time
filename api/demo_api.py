@@ -1,5 +1,6 @@
 from random import randint
 import datetime
+import tz_utils
 
 DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"  # "Mon, 19 Apr 2021 00:00:00 GMT"
 
@@ -14,7 +15,7 @@ DEMO_DELIVERY = {"orders": [{"num": 112,
                  "date": datetime.date.today()}
 
 def make_date_time_from_now(days=0, hours=0):
-    now = datetime.datetime.today()
+    now = tz_utils.get_now_in()
     date_time = now + datetime.timedelta(days=days, hours=hours)
     return date_time.strftime(DATE_FORMAT)
     
