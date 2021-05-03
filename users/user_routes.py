@@ -90,6 +90,8 @@ def edit_delvieries():
 
 @user_views.route('/dashboard')
 def show_stats():
+    update_schedule(g.user)
+    
     STATS_TIMEFRAME = datetime.timedelta(days=7)
 
     def within_stat_timeframe(date):

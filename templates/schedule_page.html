@@ -5,13 +5,18 @@
 {% block content %}
 Today is {{datetime.date.today()|dateformat}}
 {% if shifts %}
-<ul> Start - End - Type
+<table class="table table-light table-striped table-sm table-bordered">
+<thead class="thead-dark">
+    <th>Date</th> <th>Start</th> <th>End</th> <th>Type</th>
+</thead>
+<tbody>
     {% for shift in shifts %}
-    <li>
-        {{shift.start}} - {{shift.end}} - {{shift.shift_type}}
-    </li>
+    <tr>
+        <td>{{shift.start|dateformat}}</td> <td> {{shift.start|timeformat}}</td> <td> {{shift.end|timeformat}} </td><td>{{shift.shift_type}}</td>
+    </tr>
     {% endfor %}
-</ul>
+    </tbody>
+</table>
 {% else %}
 <h1 class="h1">I Don't see any shifts here, Do You?</h1>
 {% endif %}

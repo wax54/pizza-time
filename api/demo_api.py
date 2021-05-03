@@ -12,20 +12,27 @@ DEMO_DELIVERY = {"orders": [{"num": 112,
                              "address": "3050 125th Ave NE Bellevue, WA. 98005",
                              "phone": "425-555-8972"}],
                  "date": datetime.date.today()}
+
+def make_date_time_from_now(days=0, hours=0):
+    now = datetime.datetime.today()
+    date_time = now + datetime.timedelta(days=days, hours=hours)
+    return date_time.strftime(DATE_FORMAT)
+    
+
 DEMO_SCHEDULES = [
     {"week_code": 10121,
      "schedule": [
-         {"start": "Mon, 19 Apr 2021 17:00:00 GMT",
-          "end": "Mon, 19 Apr 2021 21:00:00 GMT",
+         {"start": make_date_time_from_now(hours=-1),
+          "end": make_date_time_from_now(hours=5),
           "shift_type": "DR1"},
-         {"start": "Wed, 21 Apr 2021 16:00:00 GMT",
-          "end": "Wed, 21 Apr 2021 20:00:00 GMT",
+         {"start": make_date_time_from_now(days=1,hours=-1), 
+          "end": make_date_time_from_now(days=1, hours=8),
           "shift_type": "DRRUSH"},
-         {"start": "Thu, 22 Apr 2021 17:00:00 GMT",
-          "end": "Thu, 22 Apr 2021 22:00:00 GMT",
+         {"start": make_date_time_from_now(days=3, hours=-1),
+          "end": make_date_time_from_now(days=3, hours=3),
           "shift_type": "DR4"},
-         {"start": "Sat, 24 Apr 2021 16:00:00 GMT",
-          "end": "Sat, 24 Apr 2021 23:00:00 GMT",
+         {"start": make_date_time_from_now(days=5, hours=-1),
+          "end": make_date_time_from_now(days=5, hours=6),
           "shift_type": "DRLATE"}
      ]}
 ]

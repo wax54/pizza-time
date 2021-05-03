@@ -74,17 +74,19 @@ class Schedule(db.Model):
 
     @classmethod
     def get_last(cls, user_id, delta=None):
+        #get a timestamp at the end of the day
+        today = datetime.datetime.today() + datetime.timedelta(hours=11, minutes=59)
         if delta:
             return cls.query.filter(
                 Schedule.user_id == user_id,
-                Schedule.start <= datetime.date.today(),
+                Schedule.start <= today,
                 Schedule.end >= (datetime.date.today() - delta)
 
             ).all()
         else:
             return cls.query.filter(
                 Schedule.user_id == user_id,
-                Schedule.start <= datetime.date.today()
+                Schedule.start <= today
 
             ).all()
 

@@ -23,11 +23,8 @@ connect_db(app)
 
 
 @app.template_filter('timeformat')
-def format_date(value, format='medium'):
-    if format == 'full':
-        format = "%A, %B %d"
-    elif format == 'medium':
-        format = "%a, %b %d"
+def format_date(value):
+    format = "%I:%M%p"
     return datetime.date.strftime(value, format)
 
 @app.template_filter('dateformat')
