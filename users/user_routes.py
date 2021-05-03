@@ -13,6 +13,7 @@ user_views = Blueprint('user_routes', __name__)
 
 
 def urlencode(string):
+    """encode a string to be added to a url"""
     return urllib.parse.quote_plus(string)
 
 # This is run before any route in this file

@@ -10,9 +10,9 @@ app.config['SQLALCHEMY_ECHO'] = True
 
 
 user1_data = {"email": "test1@email.com",
-              "token": "TESTTOKEN1", "name": "TESTUSER1"}
+              "token": "TESTTOKEN1", "name": "TESTUSER1", "api_id": 'demo'}
 user2_data = {"email": "test2@email.com",
-              "token": "TESTTOKEN2", "name": "TESTUSER2"}
+              "token": "TESTTOKEN2", "name": "TESTUSER2", "api_id": 'demo'}
 
 
 class LoginTests(TestCase):
@@ -32,7 +32,7 @@ class LoginTests(TestCase):
         u_id = User.create_or_update(**user1_data)
 
         anoter_u_id = User.create_or_update(
-            email=user1_data['email'], token="SOMEOTHERTOKEN", name="A NICK NAME")
+            email=user1_data['email'], token="SOMEOTHERTOKEN", name="A NICK NAME", api_id='demo')
         #same email, same user id
         self.assertEqual(u_id, anoter_u_id)
         user = User.query.get(u_id)

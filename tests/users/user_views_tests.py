@@ -61,10 +61,13 @@ class GetDeliveryTests(TestCase):
                 f"Your Current Delivery!", html)
 
 
-class LoginTests(TestCase):
+class PagLoginTests(TestCase):
+    def setUp(self):
+        self.url='/multi/login'
+        
     def test_get_gets_page(self):
         with app.test_client() as client:
-            res = client.get('/login')
+            res = client.get(self.url)
             self.assertEqual(res.status_code, 200)
             html = res.get_data(as_text=True)
             self.assertIn('<form method="POST" id="login_form">', html)
@@ -72,7 +75,7 @@ class LoginTests(TestCase):
     def test_post_returns_page_on_bad_creds(self):
         with app.test_client() as client:
             res = client.post(
-                '/login', data={'email': "testEmail", "password": "testPassword1", "api": PAG_API_KEY})
+                self.url, data={'email': "testEmail", "password": "testPassword1", "api": PAG_API_KEY})
             self.assertEqual(res.status_code, 200)
             html = res.get_data(as_text=True)
 
@@ -81,10 +84,9 @@ class LoginTests(TestCase):
             self.assertIn('testEmail', html)
 
     def test_post_redirects_on_success(self):
-
         with app.test_client() as client:
             res = client.post(
-                '/login', data={'email': "super@roo.com", "password": "password", "api": DEMO_API_KEY})
+                self.url, data={'email': "super@roo.com", "password": "password", "api": DEMO_API_KEY})
 
             self.assertEqual(res.status_code, 302)
             self.assertEqual(

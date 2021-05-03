@@ -15,10 +15,12 @@ class User(db.Model):
 
     @classmethod
     def get(cls, pk):
+        """a shortcut for the cls.query.get() function"""
         return cls.query.get(pk)
 
     @classmethod
     def delete_by_email(cls, email):
+        """A quick way of deleting a user by email"""
         cls.query.filter_by(email=email).delete()
         db.session.commit()
 
@@ -67,13 +69,19 @@ class Schedule(db.Model):
 
     @classmethod
     def get_future_shifts(cls, user_id):
+        """returns a list of shifts for user_id that start on or after today"""
+        #get a timestamp for the beginning of the day
+        today = datetime.date.today()
         return cls.query.filter(
             Schedule.user_id == user_id,
-            Schedule.start >= datetime.date.today()
+            Schedule.start >= today
         ).all()
 
     @classmethod
     def get_last(cls, user_id, delta=None):
+        """returns a list of shifts for user_id that start on or before today
+        optionally the delta param further limits the results to shits that end on or after 
+        today - delta"""
         #get a timestamp at the end of the day
         today = datetime.datetime.today() + datetime.timedelta(hours=11, minutes=59)
         if delta:
@@ -92,7 +100,7 @@ class Schedule(db.Model):
 
     @classmethod
     def add_from_pag(cls, schedules, user_id):
-
+        """adds a list of schedules from the pag api"""
         for week in schedules:
             #weeks that are already in the DB
             used_codes = WeekCode.get_codes_for_user(user_id, limit=10)
@@ -114,6 +122,7 @@ class Schedule(db.Model):
 
     @classmethod
     def add_from_demo(cls, schedules, user_id):
+        """adds a list of schedules from the demo api"""
         used_codes = WeekCode.get_codes_for_user(user_id, limit=10)
         for week in schedules:
             # for each week in schedules,
@@ -132,12 +141,8 @@ class Schedule(db.Model):
         db.session.commit()
 
 
-# def get_datetime(string_date):
-#     DATE_FORMAT = "%a, %d %b %Y %H:%M:%S %Z"  # "Mon, 19 Apr 2021 00:00:00 GMT"
-#     return datetime.datetime.strptime(string_date, DATE_FORMAT)
-
-
 class WeekCode(db.Model):
+    """represets one week of data(so we don't write the same week twice)"""
     __tablename__ = "week_codes"
     code = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(
@@ -145,11 +150,17 @@ class WeekCode(db.Model):
 
     @classmethod
     def add(cls, code, user_id):
+        """add a code to the db"""
         db_entry = cls(code=code, user_id=user_id)
         db.session.add(db_entry)
-        db.session.commit()
+        try:
+            db.session.commit()
+            return True
+        except:
+            return False
 
     @classmethod
     def get_codes_for_user(cls, user_id, limit = 3):
+        """gets the codes for a specified user. defaults to limiting to 3"""
         week_codes = cls.query.filter_by(user_id=user_id).limit(limit).all()
         return [w.code for w in week_codes]

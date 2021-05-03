@@ -90,12 +90,12 @@ def login_to_pag():
         return render_template('user_login.html', form=form)
 
 
-@auth_views.route('multi/login', methods=["GET", "POST"])
+@auth_views.route('/multi/login', methods=["GET", "POST"])
 def login_multi():
     """Displays the login form on GET 
     Attempts to Log the user into the API on POST"""
     #get the form
-    form = PagUserLogin()
+    form = UserLogin()
     #see if its a POST and if all required data is there
     if form.validate_on_submit():
         email = form.email.data
