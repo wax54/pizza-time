@@ -9,7 +9,8 @@ If your chosen API has schedule information, This is also pulled and stored, so 
 
 I implemented a peer created notes system for customers so drivers can help other drivers have easier deliveries. I chose to Implement this feature becuase I had always thought it would be useful, but have never seen it. 
 
-You enter the site through /<api>/login. Once logged in, you are dropped on the /current_delivery page. 
+#### You enter the site through /(API_KEY)/login. 
+Once logged in, you are dropped on the /current_delivery page. 
 
 
 ![Example Of /current_delivery page](https://i.ibb.co/QXR4cVS/curr-dels.png)
@@ -26,7 +27,7 @@ Otherwise, you can use the Nav bar at the top of the screen to go to either dash
 
 ![Example Of /schedule page](https://i.ibb.co/mz6V8DH/Screenshot-at-2021-05-02-19-19-12.png)
 
-####On the /show_schedules page,
+#### On the /show_schedules page,
  The schedule for the current user is displayed.
 
 ![Example Of /dashboard page](https://i.ibb.co/NCpL58c/dashboard.png)
