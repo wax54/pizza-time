@@ -38,7 +38,7 @@ Otherwise, you can use the Nav bar at the top of the screen to go to either dash
 
 #### This API is set up to work out of the box with 2 API's
 - Demo Api (Internally Created)
-- Pag Api [link](https://www.sam-the-dev.com/)*
+- Pag Api [Link](https://www.sam-the-dev.com/)*
 
  *You must be an employee of Pagliacci Pizza to use the Pag Api
 
@@ -48,7 +48,7 @@ Otherwise, you can use the Nav bar at the top of the screen to go to either dash
 - Gunicorn as a WSGI
 - Flask as a Web Framework
 - Postgresql as a DB
-- SqlAlchemy as an ORM
+- SQLAlchemy as an ORM
 
 #### To get this site up and running on a local linux server, you will need to have postgresql installed.
 Simply follow these steps
