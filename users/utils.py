@@ -33,7 +33,7 @@ def get_total_hours(total_hours, shift_to_add):
 def update_schedule(user):
     # check for old schedule codes
     codes = WeekCode.get_codes_for_user(user.id)
-
+    raise Exception(codes)
     # send old schedule codes with the request
     schedules = g.api.get_schedules(
         email=user.email, token=user.token, ignore=codes)
