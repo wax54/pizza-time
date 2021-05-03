@@ -3,7 +3,7 @@
 {% block title %}Your Schedule{% endblock %}
 
 {% block content %}
-Today is {{datetime.datetime.today()|dateformat}} {{datetime.datetime.today()|timeformat}}
+Today is {{today|dateformat}} {{today|timeformat}}
 {% if shifts %}
 <table class="table table-light table-striped table-sm table-bordered">
 <thead class="thead-dark">

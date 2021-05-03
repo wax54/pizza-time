@@ -9,6 +9,8 @@ from functools import reduce
 import datetime
 import urllib
 import datetime
+import pytz
+
 user_views = Blueprint('user_routes', __name__)
 
 
@@ -224,4 +226,7 @@ def show_schedule():
     update_schedule(g.user)
     # show all schedules in DB
     shifts = Schedule.get_future_shifts(g.user.id)
-    return render_template('schedule_page.html', shifts=shifts, datetime=datetime)
+    pacific = pytz.timezone('US/Pacific')
+    utc_now = pytz.utc.localize(datetime.datetime.utcnow())
+    now = utc_now.astimezone(pacific)
+    return render_template('schedule_page.html', shifts=shifts, today=now)
