@@ -1,7 +1,7 @@
 # Pizza Time
 [See the Demo on Heroku!](https://sams-pizza-time.herokuapp.com/demo/login)
 
-This app works by getting current delivery data from the specified API, and presenting simply for easy consumption during the delivery. 
+This app works by getting current delivery data from the specified API, and presenting it simply for easy consumption during the delivery. 
 
 These deliveries are stored (along with thier tip information) so you can review your stats.
 
@@ -12,6 +12,7 @@ I implemented a peer created notes system for customers so drivers can help othe
 You enter the site through /<api>/login. Once logged in, you are dropped on the /current_delivery page. 
 
 
+![Example Of /current_delivery page](https://ibb.co/CKc6L85)
 
 On the /current_delivery page, If you have a delivery, All orders on the delivery are displayed. Each order displays all relevant information - customer address, customer name, customer phone number, order tip, A link to google maps navigation to the orders address, and a link to dial the customers number.
 
