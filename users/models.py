@@ -102,9 +102,9 @@ class Schedule(db.Model):
     @classmethod
     def add_from_pag(cls, schedules, user_id):
         """adds a list of schedules from the pag api"""
+        #weeks that are already in the DB
+        used_codes = WeekCode.get_codes_for_user(user_id, limit=10)
         for week in schedules:
-            #weeks that are already in the DB
-            used_codes = WeekCode.get_codes_for_user(user_id, limit=10)
             
             code = week['pag_code']
             if code not in used_codes:
