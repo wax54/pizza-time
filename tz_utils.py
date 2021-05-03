@@ -1,4 +1,6 @@
 import pytz
+import datetime
+
 def get_now_in(tz='US/Pacific'):
     pacific = pytz.timezone(tz)
     utc_now = pytz.utc.localize(datetime.datetime.utcnow())
