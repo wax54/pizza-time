@@ -12,13 +12,12 @@ DEMO_DELIVERY = {"orders": [{"num": 112,
                             "name": "Bernadett Winthrop",
                              "address": "103 Pine Cone Break, Peachtree City",
                              "phone": "425-555-8972"}],
-                 "date": datetime.date.today()}
+                 "date": make_date_time_from_now.date()}
 
 def make_date_time_from_now(days=0, hours=0):
     """a function that returns a string 
     representing a time that is 'days' days 
     and 'hours' hours away from now"""
-    
     now = tz_utils.get_now_in()
     date_time = now + datetime.timedelta(days=days, hours=hours)
     return date_time.strftime(DATE_FORMAT)
