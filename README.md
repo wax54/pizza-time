@@ -12,23 +12,23 @@ I implemented a peer created notes system for customers so drivers can help othe
 You enter the site through /<api>/login. Once logged in, you are dropped on the /current_delivery page. 
 
 
-![Example Of /current_delivery page](https://i.ibb.co/MkvfdSD/Pizza-Time-Demo.png)
+![Example Of /current_delivery page](https://i.ibb.co/QXR4cVS/curr-dels.png)
 
 On the /current_delivery page, If you have a delivery, All orders on the delivery are displayed. Each order displays all relevant information - customer address, customer name, customer phone number, order tip, A link to google maps navigation to the orders address, and a link to dial the customers number.
 
 Otherwise, you can use the Nav bar at the top of the screen to go to either dashboard, edit_deliveries, show_schedule, or logout.
 
-On the /show_schedules page, The schedule for the current user is displayed.
-
+![Example Of /edit_deliveries page](https://i.ibb.co/71v1sMy/edit-delivery.png)
 On the /edit_deliveries page, a driver can edit tips on all previous deliveries stored
 in the DB.
 
+![Example Of /schedule page](https://i.ibb.co/mz6V8DH/Screenshot-at-2021-05-02-19-19-12.png)
+On the /show_schedules page, The schedule for the current user is displayed.
+
+![Example Of /dashboard page](https://i.ibb.co/NCpL58c/dashboard.png)
 On the /Dashboard page, a driver can view their stats
-- Avg tip$/hr over the last week
-- Num of orders 
-- Avg tip$/order
-- Avg num of orders/day of week
-- Avg Tip$/hr organized by day of week
+
+
 
 This API is set up to work out of the box with 2 API's
 - Demo Api (Internally Created)
