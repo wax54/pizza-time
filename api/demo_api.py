@@ -1,7 +1,6 @@
 from random import randint
 from api.utils import string_date_time, make_date_time_from_now
 import datetime
-import tz_utils
 
 DEMO_DELIVERY = {"orders": [{"num": 112,
                              "name": "Kassandra Meyers",
@@ -12,7 +11,7 @@ DEMO_DELIVERY = {"orders": [{"num": 112,
                              "address": "103 Pine Cone Break, Peachtree City",
                              "phone": "425-555-8972"}],
                  "date": string_date_time(
-                     make_date_time_from_now.date())}
+                     make_date_time_from_now().date())}
 
 
 DEMO_SCHEDULES = [

@@ -6,6 +6,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
+import tz_utils
 
 def request_with_retry(
     retries=3,
@@ -43,5 +44,5 @@ def make_date_time_from_now(days=0, hours=0):
     date_time = now + datetime.timedelta(days=days, hours=hours)
     return date_time
 
-def string_date_time(date_time)
-return date_time.strftime(DATE_FORMAT)
+def string_date_time(date_time):
+    return date_time.strftime(DATE_FORMAT)
