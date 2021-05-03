@@ -1,8 +1,7 @@
 from random import randint
+from api.utils import string_date_time, make_date_time_from_now
 import datetime
 import tz_utils
-
-DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"  # "Mon, 19 Apr 2021 00:00:00 GMT"
 
 DEMO_DELIVERY = {"orders": [{"num": 112,
                              "name": "Kassandra Meyers",
@@ -12,31 +11,24 @@ DEMO_DELIVERY = {"orders": [{"num": 112,
                             "name": "Bernadett Winthrop",
                              "address": "103 Pine Cone Break, Peachtree City",
                              "phone": "425-555-8972"}],
-                 "date": make_date_time_from_now.date()}
+                 "date": string_date_time(
+                     make_date_time_from_now.date())}
 
-def make_date_time_from_now(days=0, hours=0):
-    """a function that returns a string 
-    representing a time that is 'days' days 
-    and 'hours' hours away from now"""
-    now = tz_utils.get_now_in()
-    date_time = now + datetime.timedelta(days=days, hours=hours)
-    return date_time.strftime(DATE_FORMAT)
-    
 
 DEMO_SCHEDULES = [
     {"week_code": 10121,
      "schedule": [
-         {"start": make_date_time_from_now(hours=-1),
-          "end": make_date_time_from_now(hours=5),
+         {"start": string_date_time(make_date_time_from_now(hours=-1)),
+          "end": string_date_time(make_date_time_from_now(hours=5)),
           "shift_type": "DR1"},
-         {"start": make_date_time_from_now(days=1,hours=-1), 
-          "end": make_date_time_from_now(days=1, hours=8),
+         {"start": string_date_time(make_date_time_from_now(days=1,hours=-1)), 
+          "end": string_date_time(make_date_time_from_now(days=1, hours=8)),
           "shift_type": "DRRUSH"},
-         {"start": make_date_time_from_now(days=3, hours=-1),
-          "end": make_date_time_from_now(days=3, hours=3),
+         {"start": string_date_time(make_date_time_from_now(days=3, hours=-1)),
+          "end": string_date_time(make_date_time_from_now(days=3, hours=3)),
           "shift_type": "DR4"},
-         {"start": make_date_time_from_now(days=5, hours=-1),
-          "end": make_date_time_from_now(days=5, hours=6),
+         {"start": string_date_time(make_date_time_from_now(days=5, hours=-1)),
+          "end": string_date_time(make_date_time_from_now(days=5, hours=6)),
           "shift_type": "DRLATE"}
      ]}
 ]
