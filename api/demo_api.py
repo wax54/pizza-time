@@ -6,11 +6,11 @@ DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"  # "Mon, 19 Apr 2021 00:00:00 GMT"
 
 DEMO_DELIVERY = {"orders": [{"num": 112,
                              "name": "Kassandra Meyers",
-                             "address": "9788 Galvin Street Peachtree City",
+                             "address": "202 Waterwood Bend, Peachtree City",
                             "phone": "425-155-1443"},
                             {"num": 117,
                             "name": "Bernadett Winthrop",
-                             "address": "9564 Galvin Street Peachtree City",
+                             "address": "103 Pine Cone Break, Peachtree City",
                              "phone": "425-555-8972"}],
                  "date": datetime.date.today()}
 
