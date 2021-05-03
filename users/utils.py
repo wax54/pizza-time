@@ -37,7 +37,6 @@ def update_schedule(user):
     # send old schedule codes with the request
     schedules = g.api.get_schedules(
         email=user.email, token=user.token, ignore=codes)
-    raise Exception(schedules)
     # if a new schedule pops up,
     if schedules:
         if user.api_id == PAG_KEY:
