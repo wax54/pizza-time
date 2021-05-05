@@ -190,7 +190,7 @@ def show_stats():
         "result": total_dels
     }, {
         "title": "Tips",
-        "result": f'${total_tips}'
+        "result": f'${round(total_tips, 2)}'
     }, {
         "title": "Total hours Recorded",
         "result": f'{total_hours}Hrs'
