@@ -2,12 +2,12 @@ from random import randint
 from api.utils import string_date_time, make_date_time_from_now
 import datetime
 
-DEMO_DELIVERY = {"orders": [{"num": 112,
+DEMO_DELIVERY = {"orders": [{"num": 43,
                              "name": "Kassandra Meyers",
                              "address": "202 Waterwood Bend, Peachtree City",
                             "phone": "425-155-1443"},
-                            {"num": 117,
-                            "name": "Bernadett Winthrop",
+                            {"num": 17,
+                            "name": "Gracy Williams",
                              "address": "103 Pine Cone Break, Peachtree City",
                              "phone": "425-555-8972"}],
                  "date": string_date_time(
