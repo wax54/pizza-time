@@ -3,7 +3,7 @@
 
 This app works by getting current delivery data from the specified API, and presenting it simply for easy consumption during the delivery. 
 
-These deliveries are stored (along with thier tip information) so you can review your stats.
+These deliveries are stored (along with their tip information) so you can review your stats.
 
 If your chosen API has schedule information, This is also pulled and stored, so more metrics, such has Tips/Hour can be given
 
