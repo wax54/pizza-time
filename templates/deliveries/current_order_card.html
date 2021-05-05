@@ -14,8 +14,10 @@
             {% include 'deliveries/order_tip_input.html'%}
         </div>
         <div class="col-12">
-            <a class="btn btn-info btn-lg btn-block py-4 larger-text" href="tel:{{order['phone']}}"> Call Customer:
-                {{order['phone']}}</a><br>
+            <div class="d-grid gap-2">
+            <a class="btn btn-info btn-lg py-4 larger-text" href="tel:{{order['phone']}}"> Call Customer:
+                {{order['phone']}}</a>
+            </div>
         </div>
         <div class="col-12">
             {% set customer=order['customer'] %}

@@ -1,20 +1,20 @@
 {% if customer %}
-<div id="accordion-{{customer['id']}}">
-    <div class="alert alert-warning alert-large p-1">
+<div class="accordion" id="accordion-{{customer['id']}}">
+    <div class="alert alert-large p-1 my-2">
         <div class="alert-heading" id="NoteHeader-{{customer['id']}}">
-            <h5 class="">
-                <button class="btn btn-secondary btn-block" data-toggle="collapse" data-target="#notes-{{customer['id']}}"
+            <div class="d-grid gap-2">
+                <button class="btn btn-secondary btn-lg" data-bs-toggle="collapse" data-bs-target="#notes-{{customer['id']}}"
                     aria-expanded="true" aria-controls="notes-{{customer['id']}}" style="text-align: center;">
                     
                         <span class=" larger-text">Notes</span>
                         <small class="normal-text"> ({{customer.notes|length}})</small>
                     
                 </button>
-            </h5>
+            </div>
         </div>
 
         <div id="notes-{{customer['id']}}" class="collapse {% if customer.notes|length < 2 %} show {% endif %}" aria-labelledby="NoteHeader-{{customer['id']}}"
-            data-parent="#accordion-{{customer['id']}}">
+            data-bs-parent="#accordion-{{customer['id']}}">
             {% set driver_has_note = customer.has_note_from(g.user.id) %}
             {% for note in customer.notes %}
                 <div class="note-alert alert alert-info">
