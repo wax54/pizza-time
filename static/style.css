@@ -1,8 +1,9 @@
 body{
     background-color: var(--bs-gray-dark);
-    color: var(--light);
+    color: var(--bs-light);
     font-size: 1.75rem;
 }
+
 ul{
     list-style-type:  none;
     padding-inline-start: 0px;
