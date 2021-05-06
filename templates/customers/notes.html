@@ -21,7 +21,7 @@
                 {% if note.driver_id != g.user.id%}
                 <div class="row align-items-center my-1 ">
                     <p class="h4 col-9 note larger-text"> {{note.note}}</p>
-                    <small class="col-3"> -{{note.driver.name}}</small>
+                    <small class="col-3">{% if note.driver_id %} -{{note.driver.name}} {% endif %}</small>
                 </div>
                 {% else %}
                 <div id="{{customer['id']}}-personal-note" data-cust-id="{{customer['id']}}"

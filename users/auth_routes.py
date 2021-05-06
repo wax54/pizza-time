@@ -34,18 +34,26 @@ def login_to_demo():
     #see if its a POST and if all required data is there
     if form.validate_on_submit():
         name = form.name.data
-        
-        #delete the old user, along with their notes and orders
-        User.delete_by_email(email="demo_user2")
-        #make a new user
-        u_id = User.create_or_update(name=name, email="demo_user2", token="DEMOTOKEN", api_id=DEMO_KEY)
-        
-        #put the id in the session
-        session[USER_SESSION_KEY] = u_id
-        session[API_SESSION_KEY] = DEMO_KEY
+        api_key = DEMO_KEY
 
-        #redirect to curr_del page
-        return redirect('/current_delivery')
+        #set the API to use the Pag api
+        api = apis[api_key]
+        #delete the old user, along with their notes and orders
+        #User.delete_by_email(email="demo_user2")
+        #make a new user
+        token = api.login()
+        try:
+            u_id = User.create(name=name, email="demo_user2", token=token, api_id=api_key)
+            #put the id in the session
+            session[USER_SESSION_KEY] = u_id
+            session[API_SESSION_KEY] = DEMO_KEY
+            #redirect to curr_del page
+            return redirect('/current_delivery')
+        except:
+            #login failed
+            flash("Woah there Buddy, Try That Again.", "danger")
+            #return to login page
+            return render_template('user_login.html', form=form)
     else:
         #show login page
         return render_template('user_login.html', form=form)

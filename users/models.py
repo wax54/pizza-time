@@ -25,8 +25,16 @@ class User(db.Model):
         db.session.commit()
 
     @classmethod
+    def create(cls, email, token, api_id, name=None):
+        u = User(email=email, token=token, name=email, api_id=api_id)
+        if name:
+            u.name = name
+        db.session.add(u)
+        db.session.commit()
+        return u.id
+    @classmethod
     def create_or_update(cls, email, token, api_id, name=None):
-        """If a user already exists, update the token (and name if given) 
+        """If a user with this email already exists, update the token (and name if given) 
         and return the id to the caller
             otherwise, create the user and return the id to the caller"""
         u = cls.query.filter_by(email=email).first()
@@ -107,7 +115,7 @@ class Schedule(db.Model):
         for week in schedules:
             
             code = week['pag_code']
-            if code not in used_codes:
+            if int(code) not in used_codes:
                 # for each week in schedules,
                 # add the pag_code to WeekCode
                 WeekCode.add(code, user_id)
@@ -129,7 +137,7 @@ class Schedule(db.Model):
             # for each week in schedules,
             # add the week_code to WeekCode
             code = week['week_code']
-            if code not in used_codes:
+            if int(code) not in used_codes:
                 WeekCode.add(code, user_id)
                 for shift in week['schedule']:
                     # for every shift, make a new schedule
@@ -147,7 +155,7 @@ class WeekCode(db.Model):
     __tablename__ = "week_codes"
     code = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(
-        'users.id', ondelete='CASCADE'))
+        'users.id', ondelete='CASCADE'), primary_key=True)
 
     @classmethod
     def add(cls, code, user_id):
@@ -161,7 +169,8 @@ class WeekCode(db.Model):
             return False
 
     @classmethod
-    def get_codes_for_user(cls, user_id, limit = 3):
+    def get_codes_for_user(cls, user_id, limit = 8):
         """gets the codes for a specified user. defaults to limiting to 3"""
-        week_codes = cls.query.filter_by(user_id=user_id).limit(limit).all()
+        week_codes = cls.query.filter_by(user_id=user_id).order_by(
+            cls.code.desc()).limit(limit).all()
         return [w.code for w in week_codes]

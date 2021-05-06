@@ -65,9 +65,6 @@ def get_delivery(email, token):
         return False
 
 
-def login(email, password):
-    if email and password:
-        # successful login
-        return hash(randint(100, 100000000))
-    else:
-        return False
+def login():
+    # successful login
+    return hash(randint(100, 100000000))
