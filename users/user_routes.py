@@ -197,7 +197,7 @@ def show_stats():
     }, 
         {
         "title": "Orders/Hour",
-        "desc": "Avg amount of dollars made per hour worked (according to your schedule)",
+        "desc": "Avg amount of orders delivered per hour worked (according to your schedule)",
         "result": f'{round(orders_per_hour, 2)}'
     }, {
         "title": "Dollars/Hour",
