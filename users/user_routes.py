@@ -164,7 +164,7 @@ def show_stats():
             dollars_per_hour = dollars_by_dow[dow]/hours
         except ZeroDivisionError:
             dollars_per_hour = 0
-        dollars_per_hour_by_dow[dow] = round(dollars_per_hour, 2)
+        dollars_per_hour_by_dow[dow] = f'${round(dollars_per_hour, 2)}'
         
         try:
             dels_per_hour = dels_by_dow[dow]/hours
@@ -179,7 +179,7 @@ def show_stats():
             dollars_per_del = dollars/dels_by_dow[dow]
         except ZeroDivisionError:
             dollars_per_del = 0
-        dollars_per_del_by_dow[dow] = round(dollars_per_del, 2)
+        dollars_per_del_by_dow[dow] = f'${round(dollars_per_del, 2)}'
     
     stats = [
     {
