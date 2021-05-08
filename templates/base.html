@@ -15,29 +15,32 @@
     <a class="navbar-brand normal-text" href="/">Pizza Time</a>
 
     {% if g.user %}
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon larger-text"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item m-2">
+        <ul class="navbar-nav mr-auto" style="text-align:center;">
+
+            <li class="nav-item m-2 d-grid gap-2">
                 <a class="btn btn-block btn-light normal-text" href="/current_delivery">Current Delivery</a>
+             
             </li>
-            <li class="nav-item m-2">
+            
+            <li class="nav-item m-2 d-grid gap-2">
                 <a class="btn btn-block btn-light normal-text" href="/dashboard">Dashboard</a>
             </li>
-            <li class="nav-item m-2">
+            <li class="nav-item m-2 d-grid gap-2">
                 <a class="btn btn-block btn-light normal-text" href="/edit_deliveries">Edit Deliveries</a>
             </li>
-            <li class="nav-item m-2">
+            <li class="nav-item m-2 d-grid gap-2">
                 <a class="btn btn-block btn-light normal-text" href="/show_schedule">Schedule</a>
             </li>
             
         </ul>
         <ul class="navbar-nav navbar-right">
-            <li class="nav-item m-2" style="float:right;">
+            <li class="nav-item m-2 d-grid gap-2" style="float:right;">
                 <a class="btn btn-block btn-danger normal-text" href="/logout">Logout</a>
             </li>
         </ul>
