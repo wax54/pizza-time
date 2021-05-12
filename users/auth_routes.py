@@ -111,8 +111,12 @@ def login_multi():
         api_key = form.api.data
         #set the API to use
         api = apis[api_key]
+        token = None
         #attempt to login to the API
-        token = api.login(email=email, password=password)
+        if api_key == PAG_KEY:
+            token = api.login(email=email, password=password)
+        else:
+            token = api.login()
         #if success
         if token:
             #save them in the DB
