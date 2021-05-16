@@ -66,10 +66,12 @@ class Delivery(db.Model):
 class Order(db.Model):
     """A single order"""
     __tablename__ = "orders"
-    num = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, primary_key=True)
-    store = db.Column(db.Text, primary_key=True)
-    api_id = db.column(db.Text, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    
+    num = db.Column(db.Integer)
+    date = db.Column(db.Date)
+    store = db.Column(db.Text)
+    api_id = db.Column(db.Text)
     
     tip = db.Column(db.Float, server_default='0')
     del_id = db.Column(db.Integer, db.ForeignKey(
@@ -84,7 +86,8 @@ class Order(db.Model):
                                backref='orders')
 
     def serialize(self):
-        return {"num": self.num,
+        return {"id": self.id,
+                "num": self.num,
                 "tip": self.tip,
                 "date": self.date,
                 "del_id": self.del_id,
@@ -100,7 +103,7 @@ class Order(db.Model):
 
     @classmethod
     def get(cls, num, date, store, api_id):
-        return cls.query.get((num, date, store, api_id))
+        return cls.query.filter_by(num=num, date=date, store=store, api_id=api_id).first()
 
     @classmethod
     def get_orders_for_day(cls, driver_id, date=date_class.today()):

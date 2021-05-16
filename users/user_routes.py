@@ -71,8 +71,8 @@ def show_current_delviery():
             for order in d.orders:
                 if order.num == curr_order['num']:
                     db_order = order
+                    curr_order['id'] = db_order.id
                     curr_order['tip'] = db_order.tip
-                    curr_order['date'] = db_order.date
                     curr_order['customer'] = db_order.customer
 
     return render_template('deliveries/current_delivery.html', delivery=delivery, name=g.user.name)

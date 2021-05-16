@@ -3,6 +3,7 @@ let tipInputs = document.querySelectorAll(".tip-input");
 for (let input of tipInputs) {
     input.addEventListener("change", tipChanged);
 }
+
 async function tipChanged(evt) {
     const input = evt.target;
     const success = await updateTipFromInputId(input.id);
@@ -10,7 +11,22 @@ async function tipChanged(evt) {
 
 }
 
+async function updateTipFromInputId(id) {
+    const input = document.getElementById(id);
 
+    const orderId = input.dataset.id;
+
+    const tip = getTip(input);
+    jsonPayload = { id: orderId, tip: tip };
+    const res = await axios.patch("/api/orders/edit_tip", json = jsonPayload);
+    const data = res.data;
+    //let them know if the attempt failed
+    if (data.status == true) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 function tipUpdateHTML(result, input) {
     // TODO 
@@ -26,22 +42,6 @@ function tipUpdateHTML(result, input) {
 }
 
 
-async function updateTipFromInputId(id) {
-    const input = document.getElementById(id);
-
-    const num = input.dataset.num;
-    const date = input.dataset.date;
-    const tip = getTip(input);
-    jsonPayload = { num, date, tip };
-    const res = await axios.patch("/api/orders/edit_tip", json = jsonPayload);
-    const data = res.data;
-    //let them know if the attempt failed
-    if (data.status == true) {
-        return true;
-    } else {
-        return false;
-    }
-}
 
 function getTip(input) {
     let tip = input.value;

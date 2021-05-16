@@ -28,6 +28,8 @@ deliveries = [{"driver_id": 1},
 orders = [{
     "num": '213',
     "date": '2021-04-15',
+    "store": "1",
+    "api": DEMO_KEY,
     "tip": 10,
     "del_id": 1,
     "cust_id": cust_id,
@@ -35,6 +37,8 @@ orders = [{
     {
     "num": '218',
     "date": '2021-04-15',
+    "store": "1",
+    "api": DEMO_KEY,
     "tip": 3,
     "del_id": 1,
     "cust_id": cust_id,
@@ -42,6 +46,8 @@ orders = [{
     {
     "num": '230',
     "date": '2021-04-15',
+    "store": "1",
+    "api": DEMO_KEY,
     "tip": 5,
     "del_id": 2,
     "cust_id": cust_id,
@@ -49,6 +55,8 @@ orders = [{
     {
     "num": '103',
     "date": '2021-04-16',
+    "store": "1",
+    "api": DEMO_KEY,
     "tip": 5,
     "del_id": 3,
     "cust_id": cust_id,
@@ -56,6 +64,8 @@ orders = [{
     {
     "num": '116',
     "date": '2021-04-18',
+    "store": "1",
+    "api": DEMO_KEY,
     "tip": 5,
     "del_id": 4,
     "cust_id": cust_id,
@@ -63,6 +73,8 @@ orders = [{
     {
     "num": '213',
     "date": '2021-04-18',
+    "store": "1",
+    "api": DEMO_KEY,
     "tip": 5,
     "del_id": 5,
     "cust_id": cust_id,
@@ -70,6 +82,8 @@ orders = [{
     {
     "num": '101',
     "date": '2021-04-20',
+    "store": "1",
+    "api": DEMO_KEY,
     "tip": 5,
     "del_id": 6,
     "cust_id": cust_id,
