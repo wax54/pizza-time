@@ -1,6 +1,7 @@
 from random import randint
 from api.utils import string_date_time, make_date_time_from_now
 import datetime
+DATE_FORMAT = "%a, %d %b %Y %H:%M:%S %Z"  # "Mon, 19 Apr 2021 00:00:00 GMT"
 
 DEMO_DELIVERY = {"orders": [{"num": 43,
                              "name": "Kassandra Meyers",
@@ -44,7 +45,7 @@ def order_num_generator():
 order_num = order_num_generator()
 
 def make_date(date):
-    return date.strftime(DATE_FORMAT)
+    return datetime.date.strftime(DATE_FORMAT)
 
 def get_schedules(email, token, ignore=[]):
     if email and token:
