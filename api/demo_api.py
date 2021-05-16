@@ -11,7 +11,8 @@ DEMO_DELIVERY = {"orders": [{"num": 43,
                              "address": "103 Pine Cone Break, Peachtree City",
                              "phone": "425-555-8972"}],
                  "date": string_date_time(
-                     make_date_time_from_now().date())}
+                     make_date_time_from_now().date()),
+                 "store": "1"}
 
 
 DEMO_SCHEDULES = [

@@ -16,8 +16,9 @@ class Delivery(db.Model):
                              backref='delivery')
 
     @classmethod
-    def save_delivery(cls, delivery, driver_id):
+    def save_delivery(cls, delivery, driver_id, api_id):
         date = delivery['date']
+        store = delivery['store']
         orders = delivery['orders']
         old_deliveries = set()
 
@@ -32,7 +33,7 @@ class Delivery(db.Model):
             customer = Customer.create_or_get(
                 id=customer_id, name=order['name'].split(' ')[0])
 
-            db_order = Order.get(order['num'], date)
+            db_order = Order.get(order['num'], date, store, api_id)
             if db_order:
                 old_deliveries.add(db_order.del_id)
                 db_order.del_id = delivery.id
@@ -42,6 +43,8 @@ class Delivery(db.Model):
                 db_order = Order(
                     num=order['num'],
                     date=date,
+                    store=store,
+                    api_id=api_id,
                     del_id=delivery.id,
                     cust_id=customer_id,
                     driver_id=driver_id)
@@ -65,6 +68,9 @@ class Order(db.Model):
     __tablename__ = "orders"
     num = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, primary_key=True)
+    store = db.Column(db.Text, primary_key=True)
+    api_id = db.column(db.Text, primary_key=True)
+    
     tip = db.Column(db.Float, server_default='0')
     del_id = db.Column(db.Integer, db.ForeignKey(
         'deliveries.id', ondelete='CASCADE'))
@@ -83,7 +89,9 @@ class Order(db.Model):
                 "date": self.date,
                 "del_id": self.del_id,
                 "cust_id": self.cust_id,
-                "driver_id": self.driver_id
+                "driver_id": self.driver_id,
+                "store": self.store,
+                "api_id": self.api_id
                 }
 
     def update_db(self):
@@ -91,8 +99,8 @@ class Order(db.Model):
         db.session.commit()
 
     @classmethod
-    def get(cls, num, date):
-        return cls.query.get((num, date))
+    def get(cls, num, date, store, api_id):
+        return cls.query.get((num, date, store, api_id))
 
     @classmethod
     def get_orders_for_day(cls, driver_id, date=date_class.today()):

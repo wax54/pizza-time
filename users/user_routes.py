@@ -51,7 +51,7 @@ def show_current_delviery():
         flash("No Delivery Found!", "info")
     if delivery['orders']:
         # successful credentials and delivery found
-        d = Delivery.save_delivery(delivery=delivery, driver_id=g.user.id)
+        d = Delivery.save_delivery(delivery=delivery, driver_id=g.user.id, api_id = g.user.api_id)
 
         # So now we have the variable delivery,
         #       A plain object the API gave us
