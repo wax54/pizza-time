@@ -84,7 +84,7 @@ class Schedule(db.Model):
         return cls.query.filter(
             Schedule.user_id == user_id,
             Schedule.end >= today
-        ).all()
+        ).order_by(Schedule.start).all()
 
     @classmethod
     def get_last(cls, user_id, delta=None):
