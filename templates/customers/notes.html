@@ -1,9 +1,9 @@
 {% if customer %}
 <div class="accordion" id="accordion-{{customer['id']}}">
-    <div class="alert alert-large p-1 my-2">
+    <div class="alert alert-large p-0 my-4">
         <div class="alert-heading" id="NoteHeader-{{customer['id']}}">
             <div class="d-grid gap-2">
-                <button class="btn btn-secondary btn-lg" data-bs-toggle="collapse" data-bs-target="#notes-{{customer['id']}}"
+                <button class="btn btn-secondary btn-lg py-3" data-bs-toggle="collapse" data-bs-target="#notes-{{customer['id']}}"
                     aria-expanded="true" aria-controls="notes-{{customer['id']}}" style="text-align: center;">
                     
                         <span class=" larger-text">Notes</span>
