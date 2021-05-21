@@ -1,5 +1,6 @@
 from markupsafe import Markup
-from flask import Flask, redirect
+from flask import Flask, redirect, request
+from werkzeug.wrappers import Request
 
 from config import DB_URL, SECRET_KEY
 from db_setup import connect_db, db
@@ -21,6 +22,16 @@ connect_db(app)
 # db.drop_all()
 # db.create_all()
 
+
+#HTTPS ONLY
+@app.before_request
+def https_redirect():
+    print('HELO!', request.url)
+    print('#######################')
+    if request.headers.get('X-Forwarded-Proto') == 'http':
+        url = request.url.replace('http://', 'https://')
+        print(url)
+        return redirect(url)
 
 @app.template_filter('timeformat')
 def format_date(value):
