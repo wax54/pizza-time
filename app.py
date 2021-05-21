@@ -26,11 +26,8 @@ connect_db(app)
 #HTTPS ONLY
 @app.before_request
 def https_redirect():
-    print('HELO!', request.url)
-    print('#######################')
     if request.headers.get('X-Forwarded-Proto') == 'http':
         url = request.url.replace('http://', 'https://')
-        print(url)
         return redirect(url)
 
 @app.template_filter('timeformat')

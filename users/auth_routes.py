@@ -16,7 +16,6 @@ def logout_user():
 @auth_views.route('/login')
 def choose_login():
     api_key = session.get(API_SESSION_KEY)
-    print("****************", api_key)
     if api_key:
         if api_key == DEMO_KEY:
             return redirect('/demo/login')
