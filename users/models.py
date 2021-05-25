@@ -1,5 +1,8 @@
+
+from api.utils import make_date_time_from_now
 from db_setup import db
-import datetime
+import secrets
+
 
 
 class User(db.Model):
@@ -9,6 +12,9 @@ class User(db.Model):
     name = db.Column(db.Text)
     email = db.Column(db.Text, nullable=False)
     token = db.Column(db.Text, nullable=False, unique=True)
+    token_expiration = db.Column(db.DateTime, nullable=True)
+    accessor = db.Column(db.Text, nullable=True)
+    accessor_expiration = db.Column(db.DateTime, nullable=True)
     api_id = db.Column(db.Text, nullable=False)
     shifts = db.relationship('Schedule',
                              backref='user')
@@ -19,25 +25,48 @@ class User(db.Model):
         return cls.query.get(pk)
 
     @classmethod
+    def get_by_accessor(cls, accessor):
+        """gets a user by its accessor"""
+        user = cls.query.filter_by(accessor=accessor).first()
+        return user if user else False
+    
+    @classmethod
+    def update_accessor(cls, id):
+        """updates a users accessor by id"""
+        user = cls.get(id)
+        if not user:
+            return False
+        accessor_blob = cls.create_unique_accessor()
+        user.accessor = accessor_blob['accessor']
+        user.accessor_expiration = accessor_blob['expiration']
+        
+        db.session.add(user)
+        db.session.commit()
+        
+        return accessor_blob['accessor']
+
+    @classmethod
     def delete_by_email(cls, email):
         """A quick way of deleting a user by email"""
         cls.query.filter_by(email=email).delete()
         db.session.commit()
 
     @classmethod
-    def create(cls, email, token, api_id, name=None):
-        u = User(email=email, token=token, name=email, api_id=api_id)
+    def create(cls, email, token, api_id, token_expiration=None,  name=None):
+        u = User(email=email, token=token, token_expiration=token_expiration, name=email, api_id=api_id)
         if name:
             u.name = name
         db.session.add(u)
         db.session.commit()
-        return u.id
+        return u
+    
     @classmethod
-    def create_or_update(cls, email, token, api_id, name=None):
+    def create_or_update(cls, email, token, api_id, token_expiration=None, name=None):
         """If a user with this email already exists, update the token (and name if given) 
         and return the id to the caller
             otherwise, create the user and return the id to the caller"""
         u = cls.query.filter_by(email=email).first()
+        
         if u:
             # user already exists, just update token
             u.token = token
@@ -46,9 +75,27 @@ class User(db.Model):
 
         if name:
             u.name = name
+            
+        if token_expiration:
+            u.token_expiration = token_expiration
+
         db.session.add(u)
         db.session.commit()
-        return u.id
+        return u
+    
+    @classmethod
+    def create_unique_accessor(cls):
+        ACCESSOR_TIMEOUT_DAYS = 8
+        
+        accessor = secrets.token_urlsafe()
+        
+        while cls.get_by_accessor(accessor):
+            accessor = secrets.token_urlsafe()
+            
+        expiration = make_date_time_from_now(days=ACCESSOR_TIMEOUT_DAYS)
+        
+        return {"accessor": accessor, "expiration": expiration}
+
 
 
 class Schedule(db.Model):

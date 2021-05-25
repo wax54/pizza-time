@@ -66,7 +66,14 @@ def get_delivery(email, token):
     else:
         return False
 
+def token_expiry(email, token):
+    return make_date_time_from_now(days=4)
+
+
+def re_auth(email, token):
+    return {"token": hash(randint(100, 100000000)), "expiration": make_date_time_from_now(years=1)}
+
 
 def login():
     # successful login
-    return hash(randint(100, 100000000))
+    return {"token": hash(randint(100, 100000000)), "expiration": make_date_time_from_now(years=1)}

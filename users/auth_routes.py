@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, session, redirect, flash
-from config import USER_SESSION_KEY, API_SESSION_KEY
+from flask import Blueprint, render_template, session, redirect, flash, make_response
+from config import USER_SESSION_KEY, API_SESSION_KEY, USER_ACCESSOR_KEY
 from users.forms import UserLogin, DemoUserLogin, PagUserLogin
 from users.models import User
 from api import apis, PAG_KEY, DEMO_KEY
@@ -40,17 +40,33 @@ def login_to_demo():
         #delete the old user, along with their notes and orders
         #User.delete_by_email(email="demo_user2")
         #make a new user
-        token = api.login()
+        token_glob = api.login()
+        token = token_glob['token']
+        expiration = token_glob['expiration']
         try:
-            u_id = User.create(name=name, email="demo_user2", token=token, api_id=api_key)
+            u = User.create(name=name, 
+                            email="demo_user2", 
+                            token=token, 
+                            token_expiration=expiration, 
+                            api_id=api_key)
+            #This will be false if the user was never created
+            u_accessor = User.update_accessor(u.id)
+            
             #put the id in the session
-            session[USER_SESSION_KEY] = u_id
+            session[USER_SESSION_KEY] = u.id
             session[API_SESSION_KEY] = DEMO_KEY
+            
+            #TODO add u_accessor to long term cookies set to expire longer than the accessor will expire
+            #TODO change pag an multi login
+            
             #redirect to curr_del page
-            return redirect('/current_delivery')
-        except:
+            resp = make_response(redirect('/current_delivery'))
+            resp.set_cookie(USER_ACCESSOR_KEY, u_accessor, expires=u.accessor_expiration)
+            return resp 
+        except Exception as e:
             #login failed
             flash("Woah there Buddy, Try That Again.", "danger")
+            print(e)
             #return to login page
             return render_template('user_login.html', form=form)
     else:
@@ -75,15 +91,23 @@ def login_to_pag():
         #set the API to use the Pag api
         api = apis[api_key]
         #attempt to login to the API
-        token = api.login(email=email, password=password)
+        token_glob = api.login(email=email, password=password)
+        
+        token = token_glob['token']
+        expiration = token_glob['expiration']
         #if success
         if token:
             #save them in the DB
-            u_id = User.create_or_update(
-                name=name, email=email, token=token, api_id=api_key)
+            u = User.create_or_update(name=name, 
+                                        email=email, 
+                                        token=token, 
+                                        token_expiration=expiration, 
+                                        api_id=api_key)
             
+            #This will be false if the user was never created
+            u_accessor = User.update_accessor(u.id)
             #put the id in the session
-            session[USER_SESSION_KEY] = u_id
+            session[USER_SESSION_KEY] = u.id
             session[API_SESSION_KEY] = api_key
             #redirect to curr_del page
             return redirect('/current_delivery')

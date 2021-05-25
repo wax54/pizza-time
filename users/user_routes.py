@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, jsonify, render_template, session, flash, g, request
-from config import USER_SESSION_KEY, API_SESSION_KEY
+from config import USER_SESSION_KEY, API_SESSION_KEY, USER_ACCESSOR_KEY
 from deliveries.models import Delivery, Order
 from customers.models import Customer, Note
 from users.models import User, Schedule, WeekCode
@@ -10,6 +10,7 @@ import datetime
 import urllib
 import datetime
 import tz_utils
+import pytz
 
 user_views = Blueprint('user_routes', __name__)
 
@@ -18,9 +19,30 @@ def urlencode(string):
     """encode a string to be added to a url"""
     return urllib.parse.quote_plus(string)
 
+def keep_token_up_to_date():
+    #assumed token expiration is in UTC
+    token_expiration = g.user.token_expiration
+
+    token_expiration = pytz.utc.localize(token_expiration)
+    RENEWAL_TIMEFRAME = datetime.timedelta(days=3)
+    
+    if (token_expiration - tz_utils.get_now_in(tz='UTC')) < RENEWAL_TIMEFRAME:
+        token = g.user.token
+        email = g.user.email
+        #token is expired, do something!
+        new_token_glob = g.api.re_auth(email=email, token=token)
+
+        if(new_token_glob):
+            new_token = new_token_glob['token']
+            expiration = new_token_glob['expiration']
+            User.create_or_update(email=email, 
+                                  token=new_token, 
+                                  token_expiration=expiration, 
+                                  api_id=g.user.api_id)
+        else:
+            print(f'failed fetching token for user {g.user.id}')
+
 # This is run before any route in this file
-
-
 @user_views.before_request
 def add_user_to_g_or_redirect():
     """If we're logged in, add curr user to Flask global.
@@ -29,6 +51,7 @@ def add_user_to_g_or_redirect():
         g.user = User.query.get(session[USER_SESSION_KEY])
         if g.user:
             g.api = apis[g.user.api_id]
+            keep_token_up_to_date()
         else:
             flash("Please Log In!")
             return redirect('/login')
