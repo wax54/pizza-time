@@ -52,6 +52,7 @@ def add_user_to_g_or_redirect():
         if g.user:
             g.api = apis[g.user.api_id]
             keep_token_up_to_date()
+            
         else:
             flash("Please Log In!")
             return redirect('/login')

@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, session, redirect, flash, make_response
-from config import USER_SESSION_KEY, API_SESSION_KEY, USER_ACCESSOR_KEY
+from config import USER_SESSION_KEY, API_SESSION_KEY, USER_ACCESSOR_KEY, JWT_AUTH_KEY, SECRET_KEY
 from users.forms import UserLogin, DemoUserLogin, PagUserLogin
 from users.models import User
 from api import apis, PAG_KEY, DEMO_KEY
+import jwt
 
 auth_views = Blueprint('auth_routes', __name__)
 
@@ -49,19 +50,31 @@ def login_to_demo():
                             token=token, 
                             token_expiration=expiration, 
                             api_id=api_key)
-            #This will be false if the user was never created
-            u_accessor = User.update_accessor(u.id)
             
-            #put the id in the session
+            #This will be false if the user was never created
+            hashed_accessor = User.update_accessor(u.id)
+            
+            #JWT payload looks like {USER_ACCESSOR_KEY: hashed_accessor, USER_SESSION_KEY: u.id}
+            user_jwt = jwt.encode({ 
+                                USER_ACCESSOR_KEY: hashed_accessor, 
+                                USER_SESSION_KEY: u.id 
+                                }, 
+                                SECRET_KEY,
+                                algorithm="HS256")
+            #put the id and api in the session
             session[USER_SESSION_KEY] = u.id
             session[API_SESSION_KEY] = DEMO_KEY
             
-            #TODO add u_accessor to long term cookies set to expire longer than the accessor will expire
-            #TODO change pag an multi login
+            #TODO change pag and multi login
             
             #redirect to curr_del page
             resp = make_response(redirect('/current_delivery'))
-            resp.set_cookie(USER_ACCESSOR_KEY, u_accessor, expires=u.accessor_expiration)
+            #put the auth and api in the cookies
+            resp.set_cookie(JWT_AUTH_KEY, user_jwt, 
+                            expires=u.accessor_expiration)
+            resp.set_cookie(API_SESSION_KEY, DEMO_KEY,
+                            expires=u.accessor_expiration)
+            
             return resp 
         except Exception as e:
             #login failed

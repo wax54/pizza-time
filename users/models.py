@@ -1,9 +1,10 @@
 
 from api.utils import make_date_time_from_now
 from db_setup import db
+from flask_bcrypt import Bcrypt
 import secrets
 import datetime
-
+bcrypt = Bcrypt()
 
 
 class User(db.Model):
@@ -43,8 +44,15 @@ class User(db.Model):
         
         db.session.add(user)
         db.session.commit()
-        
-        return accessor_blob['accessor']
+
+        #use bcrypt to hash the accessor
+        hashed = bcrypt.generate_password_hash(user.accessor)
+        # turn bytestring into normal (unicode utf8) string
+        hashed_utf8 = hashed.decode("utf8")
+
+        #TODO make a JWT that payload looks like {USER_ACCESSOR_KEY: hashed accessor, USER_SESSION_KEY: u.id}
+
+        return hashed_utf8
 
     @classmethod
     def delete_by_email(cls, email):
