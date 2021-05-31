@@ -52,15 +52,14 @@ def login_to_demo():
                             api_id=api_key)
             
             #This will be false if the user was never created
-            hashed_accessor = User.update_accessor(u.id)
+            accessor = User.update_accessor(u.id)
             
-            #JWT payload looks like {USER_ACCESSOR_KEY: hashed_accessor, USER_SESSION_KEY: u.id}
+            #JWT payload looks like {USER_ACCESSOR_KEY: accessor, USER_SESSION_KEY: u.id}
             user_jwt = jwt.encode({ 
-                                USER_ACCESSOR_KEY: hashed_accessor, 
-                                USER_SESSION_KEY: u.id 
+                                USER_ACCESSOR_KEY: accessor
                                 }, 
                                 SECRET_KEY,
-                                algorithm="HS256")
+                                algorithm=["HS256"])
             #put the id and api in the session
             session[USER_SESSION_KEY] = u.id
             session[API_SESSION_KEY] = DEMO_KEY
@@ -72,8 +71,8 @@ def login_to_demo():
             #put the auth and api in the cookies
             resp.set_cookie(JWT_AUTH_KEY, user_jwt, 
                             expires=u.accessor_expiration)
-            resp.set_cookie(API_SESSION_KEY, DEMO_KEY,
-                            expires=u.accessor_expiration)
+            # resp.set_cookie(API_SESSION_KEY, DEMO_KEY,
+            #                 expires=u.accessor_expiration)
             
             return resp 
         except Exception as e:

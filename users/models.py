@@ -44,15 +44,13 @@ class User(db.Model):
         
         db.session.add(user)
         db.session.commit()
+        # unneccesary 
+        # #use bcrypt to hash the accessor
+        # hashed = bcrypt.generate_password_hash(user.accessor)
+        # # turn bytestring into normal (unicode utf8) string
+        # hashed_utf8 = hashed.decode("utf8")
 
-        #use bcrypt to hash the accessor
-        hashed = bcrypt.generate_password_hash(user.accessor)
-        # turn bytestring into normal (unicode utf8) string
-        hashed_utf8 = hashed.decode("utf8")
-
-        #TODO make a JWT that payload looks like {USER_ACCESSOR_KEY: hashed accessor, USER_SESSION_KEY: u.id}
-
-        return hashed_utf8
+        return user.accessor
 
     @classmethod
     def delete_by_email(cls, email):

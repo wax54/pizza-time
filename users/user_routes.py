@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, jsonify, render_template, session, flash, g, request
-from config import USER_SESSION_KEY, API_SESSION_KEY, USER_ACCESSOR_KEY
+from config import USER_SESSION_KEY, API_SESSION_KEY, USER_ACCESSOR_KEY, JWT_AUTH_KEY, SECRET_KEY
 from deliveries.models import Delivery, Order
 from customers.models import Customer, Note
 from users.models import User, Schedule, WeekCode
@@ -11,6 +11,7 @@ import urllib
 import datetime
 import tz_utils
 import pytz
+import jwt
 
 user_views = Blueprint('user_routes', __name__)
 
@@ -47,13 +48,22 @@ def keep_token_up_to_date():
 def add_user_to_g_or_redirect():
     """If we're logged in, add curr user to Flask global.
     otherwise, redirect them to login"""
-    if USER_SESSION_KEY in session:
-        g.user = User.query.get(session[USER_SESSION_KEY])
-        if g.user:
-            g.api = apis[g.user.api_id]
-            keep_token_up_to_date()
-            
-        else:
+    # if USER_SESSION_KEY in session:
+    #TODO double check that request.cookies is a dict of the cookies on the request
+    if JWT_AUTH_KEY in request.cookies:
+        try:
+            user_jwt = request.cookies[JWT_AUTH_KEY]
+            #TODO find out what decode does if the jwt is invalidly signed
+
+            accessor = jwt.decode(user_jwt, SECRET_KEY, algorithm="HS256")
+            g.user = User.get_by_accessor(accessor)
+            if g.user:
+                g.api = apis[g.user.api_id]
+                keep_token_up_to_date()
+            else:
+                flash("Please Log In!")
+                return redirect('/login')
+        except jwt.exceptions.InvalidTokenError:
             flash("Please Log In!")
             return redirect('/login')
     else:
