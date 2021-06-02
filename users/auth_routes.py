@@ -1,9 +1,9 @@
+from os import access
 from flask import Blueprint, render_template, session, redirect, flash, make_response
 from config import USER_SESSION_KEY, API_SESSION_KEY, USER_ACCESSOR_KEY, JWT_AUTH_KEY, SECRET_KEY
 from users.forms import UserLogin, DemoUserLogin, PagUserLogin
 from users.models import User
 from api import apis, PAG_KEY, DEMO_KEY
-import jwt
 
 auth_views = Blueprint('auth_routes', __name__)
 
@@ -45,24 +45,15 @@ def login_to_demo():
         token = token_glob['token']
         expiration = token_glob['expiration']
         try:
-            u = User.create(name=name, 
+            user_jwt = User.create(name=name, 
                             email="demo_user2", 
                             token=token, 
                             token_expiration=expiration, 
                             api_id=api_key)
             
-            #This will be false if the user was never created
-            accessor = User.update_accessor(u.id)
-            
-            #JWT payload looks like {USER_ACCESSOR_KEY: accessor, USER_SESSION_KEY: u.id}
-            user_jwt = jwt.encode({ 
-                                USER_ACCESSOR_KEY: accessor
-                                }, 
-                                SECRET_KEY,
-                                algorithm=["HS256"])
-            #put the id and api in the session
-            session[USER_SESSION_KEY] = u.id
             session[API_SESSION_KEY] = DEMO_KEY
+            
+            u = User.authenticate(user_jwt)
             
             #TODO change pag and multi login
             

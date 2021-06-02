@@ -1,9 +1,13 @@
 
+from os import access
+from config import USER_ACCESSOR_KEY,SECRET_KEY, USER_SESSION_KEY
 from api.utils import make_date_time_from_now
 from db_setup import db
 from flask_bcrypt import Bcrypt
 import secrets
 import datetime
+import jwt
+
 bcrypt = Bcrypt()
 
 
@@ -21,10 +25,47 @@ class User(db.Model):
     shifts = db.relationship('Schedule',
                              backref='user')
 
+    def update_accessor(self):
+        """updates a users accessor"""
+        ACCESSOR_TIMEOUT_DAYS = 8
+        
+        accessor = User.create_unique_accessor()
+        self.accessor = accessor
+
+        expiration = make_date_time_from_now(days=ACCESSOR_TIMEOUT_DAYS)
+        self.accessor_expiration = expiration
+
+        db.session.add(self)
+        db.session.commit()
+        # unneccesary
+        # #use bcrypt to hash the accessor
+        # hashed = bcrypt.generate_password_hash(user.accessor)
+        # # turn bytestring into normal (unicode utf8) string
+        # hashed_utf8 = hashed.decode("utf8")
+
+        return self.accessor
+
     @classmethod
     def get(cls, pk):
         """a shortcut for the cls.query.get() function"""
         return cls.query.get(pk)
+
+
+    @classmethod
+    def authenticate(cls, jwt):
+        """gets a user by its accessor"""
+        user_data = jwt.decode(jwt, SECRET_KEY, algorithm="HS256")
+
+        accessor = user_data[USER_ACCESSOR_KEY]
+        u_id = user_data[USER_SESSION_KEY]
+        user = cls.get(u_id)
+        if user:
+            if user.accessor == accessor:
+                return user
+            else:
+                return False
+        else:
+            return False
 
     @classmethod
     def get_by_accessor(cls, accessor):
@@ -32,25 +73,6 @@ class User(db.Model):
         user = cls.query.filter_by(accessor=accessor).first()
         return user if user else False
     
-    @classmethod
-    def update_accessor(cls, id):
-        """updates a users accessor by id"""
-        user = cls.get(id)
-        if not user:
-            return False
-        accessor_blob = cls.create_unique_accessor()
-        user.accessor = accessor_blob['accessor']
-        user.accessor_expiration = accessor_blob['expiration']
-        
-        db.session.add(user)
-        db.session.commit()
-        # unneccesary 
-        # #use bcrypt to hash the accessor
-        # hashed = bcrypt.generate_password_hash(user.accessor)
-        # # turn bytestring into normal (unicode utf8) string
-        # hashed_utf8 = hashed.decode("utf8")
-
-        return user.accessor
 
     @classmethod
     def delete_by_email(cls, email):
@@ -65,7 +87,17 @@ class User(db.Model):
             u.name = name
         db.session.add(u)
         db.session.commit()
-        return u
+        #This will be false if the user was never created
+        accessor = u.update_accessor()
+
+        #JWT payload looks like {USER_ACCESSOR_KEY: accessor, USER_SESSION_KEY: u.id}
+        user_jwt = jwt.encode({
+            USER_ACCESSOR_KEY: accessor,
+            USER_SESSION_KEY: u.id
+            },
+            SECRET_KEY,
+            algorithm=["HS256"])
+        return user_jwt
     
     @classmethod
     def create_or_update(cls, email, token, api_id, token_expiration=None, name=None):
@@ -92,16 +124,12 @@ class User(db.Model):
     
     @classmethod
     def create_unique_accessor(cls):
-        ACCESSOR_TIMEOUT_DAYS = 8
-        
         accessor = secrets.token_urlsafe()
         
         while cls.get_by_accessor(accessor):
             accessor = secrets.token_urlsafe()
             
-        expiration = make_date_time_from_now(days=ACCESSOR_TIMEOUT_DAYS)
-        
-        return {"accessor": accessor, "expiration": expiration}
+        return accessor
 
 
 

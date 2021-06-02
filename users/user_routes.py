@@ -54,9 +54,7 @@ def add_user_to_g_or_redirect():
         try:
             user_jwt = request.cookies[JWT_AUTH_KEY]
             #TODO find out what decode does if the jwt is invalidly signed
-
-            accessor = jwt.decode(user_jwt, SECRET_KEY, algorithm="HS256")
-            g.user = User.get_by_accessor(accessor)
+            g.user = User.authenticate(user_jwt)
             if g.user:
                 g.api = apis[g.user.api_id]
                 keep_token_up_to_date()
