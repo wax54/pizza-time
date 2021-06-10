@@ -21,6 +21,22 @@ def urlencode(string):
     """encode a string to be added to a url"""
     return urllib.parse.quote_plus(string)
 
+
+def update_token():
+    token = g.user.token
+    email = g.user.email
+    #token is expired, do something!
+    new_token_glob = g.api.re_auth(email=email, token=token)
+
+    if(new_token_glob):
+        new_token = new_token_glob['token']
+        expiration = new_token_glob['expiration']
+        g.user.update_token(token=new_token,
+                            token_expiration=expiration)
+    else:
+        print(f'failed fetching token for user {g.user.id}')
+
+
 def keep_user_accessor_up_to_date(response):
     if g.user:
         curr_expiration = g.user.accessor_expiration
@@ -40,24 +56,14 @@ def keep_user_accessor_up_to_date(response):
 def keep_api_token_up_to_date():
     #assumed token expiration is in UTC
     token_expiration = g.user.token_expiration
-
+    if not token_expiration:
+        return update_token()
     token_expiration = pytz.utc.localize(token_expiration)
     RENEWAL_TIMEFRAME = datetime.timedelta(days=3)
     
     if (token_expiration - tz_utils.get_now_in(tz='UTC')) < RENEWAL_TIMEFRAME:
-        token = g.user.token
-        email = g.user.email
-        #token is expired, do something!
-        new_token_glob = g.api.re_auth(email=email, token=token)
+        return update_token
 
-        if(new_token_glob):
-            new_token = new_token_glob['token']
-            expiration = new_token_glob['expiration']
-            g.user.update_token(token=new_token, 
-                            token_expiration=expiration)
-        else:
-            print(f'failed fetching token for user {g.user.id}')
-            
 def ensure_logged_in():
     """If we're logged in, add curr user to Flask global.
     otherwise, redirect them to login"""
