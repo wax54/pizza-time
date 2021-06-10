@@ -113,7 +113,7 @@ def login(email, password):
         if json['status']:
             # successful login
             return {"token": json['user']['token'], 
-                    "expiration": get_date(json['user']['expiration'])}
+                    "expiration": get_datetime(json['user']['expiration'])}
         else:
             # server worked, but creds didn't
             return False
