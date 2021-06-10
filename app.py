@@ -1,8 +1,7 @@
 from markupsafe import Markup
-from flask import Flask, redirect, request
-from werkzeug.wrappers import Request
+from flask import Flask, redirect, request, g
 
-from config import DB_URL, SECRET_KEY
+from config import DB_URL, SECRET_KEY, JWT_AUTH_KEY
 from db_setup import connect_db, db
 from routes import auth_views, user_views,  customer_api, customer_views, order_api
 
@@ -24,11 +23,30 @@ connect_db(app)
 
 
 #HTTPS ONLY
-@app.before_request
 def https_redirect():
     if request.headers.get('X-Forwarded-Proto') == 'http':
         url = request.url.replace('http://', 'https://')
         return redirect(url)
+    
+#If a user_jwt is in the cookies, try to add that user to g
+#otherwise, just move along
+def add_user_to_g():
+    #TODO double check that request.cookies is a dict of the cookies on the request
+    if JWT_AUTH_KEY in request.cookies:
+        try:
+            user_jwt = request.cookies[JWT_AUTH_KEY]
+            g.user = User.authenticate(user_jwt)
+        except:
+            g.user = None
+    else:
+        g.user = None
+
+@app.before_request
+def before_app_request():
+    redirect = https_redirect()
+    if redirect:
+        return redirect
+    add_user_to_g()
 
 @app.template_filter('timeformat')
 def format_date(value):

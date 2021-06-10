@@ -1,6 +1,7 @@
 from os import access
-from flask import Blueprint, render_template, session, redirect, flash, make_response
-from config import USER_SESSION_KEY, API_SESSION_KEY, USER_ACCESSOR_KEY, JWT_AUTH_KEY, SECRET_KEY
+from flask import Blueprint, render_template, session, redirect, flash, make_response, g
+from werkzeug.wrappers import UserAgentMixin
+from config import USER_SESSION_KEY, API_SESSION_KEY, ACCESSOR_SESSION_KEY, JWT_AUTH_KEY, SECRET_KEY
 from users.forms import UserLogin, DemoUserLogin, PagUserLogin
 from users.models import User
 from api import apis, PAG_KEY, DEMO_KEY
@@ -10,17 +11,17 @@ auth_views = Blueprint('auth_routes', __name__)
 
 @auth_views.route('/logout', methods=["GET", "POST"])
 def logout_user():
-    session[USER_SESSION_KEY] = None
-    session[API_SESSION_KEY] = None
-    return redirect('/login')
+    resp = make_response(redirect('/login'))
+    resp.set_cookie(JWT_AUTH_KEY, "DELETED",
+                    max_age=0)
+    return resp
     
 @auth_views.route('/login')
 def choose_login():
-    api_key = session.get(API_SESSION_KEY)
-    if api_key:
-        if api_key == DEMO_KEY:
+    if g.user:
+        if g.user.api_id == DEMO_KEY:
             return redirect('/demo/login')
-        if api_key == PAG_KEY:
+        if g.user.api_id == PAG_KEY:
             return redirect('/pag/login')
     else:
         return render_template("choose_login.html")
@@ -45,15 +46,13 @@ def login_to_demo():
         token = token_glob['token']
         expiration = token_glob['expiration']
         try:
-            user_jwt = User.create(name=name, 
+            user = User.create(name=name, 
                             email="demo_user2", 
                             token=token, 
                             token_expiration=expiration, 
                             api_id=api_key)
             
-            session[API_SESSION_KEY] = DEMO_KEY
-            
-            u = User.authenticate(user_jwt)
+            user_jwt = User.make_jwt()
             
             #TODO change pag and multi login
             
@@ -61,7 +60,7 @@ def login_to_demo():
             resp = make_response(redirect('/current_delivery'))
             #put the auth and api in the cookies
             resp.set_cookie(JWT_AUTH_KEY, user_jwt, 
-                            expires=u.accessor_expiration)
+                            expires=user.accessor_expiration)
             # resp.set_cookie(API_SESSION_KEY, DEMO_KEY,
             #                 expires=u.accessor_expiration)
             
@@ -69,7 +68,7 @@ def login_to_demo():
         except Exception as e:
             #login failed
             flash("Woah there Buddy, Try That Again.", "danger")
-            print(e)
+            print(e.with_traceback(None))
             #return to login page
             return render_template('user_login.html', form=form)
     else:
@@ -101,19 +100,21 @@ def login_to_pag():
         #if success
         if token:
             #save them in the DB
-            u = User.create_or_update(name=name, 
+            user = User.create_or_update(name=name, 
                                         email=email, 
                                         token=token, 
                                         token_expiration=expiration, 
                                         api_id=api_key)
             
             #This will be false if the user was never created
-            u_accessor = User.update_accessor(u.id)
+            user_jwt = user.make_jwt()
             #put the id in the session
-            session[USER_SESSION_KEY] = u.id
-            session[API_SESSION_KEY] = api_key
             #redirect to curr_del page
-            return redirect('/current_delivery')
+            resp = make_response(redirect('/current_delivery'))
+            #put the auth and api in the cookies
+            resp.set_cookie(JWT_AUTH_KEY, user_jwt,
+                            expires=user.accessor_expiration)
+            return resp
         else:
             #login failed
             flash("Not Valid Credentials!", "danger")

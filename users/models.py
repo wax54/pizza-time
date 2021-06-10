@@ -1,6 +1,6 @@
 
 from os import access
-from config import USER_ACCESSOR_KEY,SECRET_KEY, USER_SESSION_KEY
+from config import SECRET_KEY, ACCESSOR_SESSION_KEY,  USER_SESSION_KEY, API_SESSION_KEY
 from api.utils import make_date_time_from_now
 from db_setup import db
 from flask_bcrypt import Bcrypt
@@ -24,10 +24,26 @@ class User(db.Model):
     api_id = db.Column(db.Text, nullable=False)
     shifts = db.relationship('Schedule',
                              backref='user')
+    def make_jwt(self):
+        #JWT payload looks like {ACCESSOR_SESSION_KEY: accessor, USER_SESSION_KEY: u.id}
+        return jwt.encode({
+            ACCESSOR_SESSION_KEY: self.accessor,
+            USER_SESSION_KEY: self.id
+        },
+            SECRET_KEY,
+            algorithm="HS256")
+    def update_token(self, token, token_expiration):
+        """updates a users token"""
+
+        self.token = token
+        self.token_expiration = token_expiration
+        db.session.add(self)
+        db.session.commit()
+
 
     def update_accessor(self):
         """updates a users accessor"""
-        ACCESSOR_TIMEOUT_DAYS = 8
+        ACCESSOR_TIMEOUT_DAYS = 4
         
         accessor = User.create_unique_accessor()
         self.accessor = accessor
@@ -52,11 +68,11 @@ class User(db.Model):
 
 
     @classmethod
-    def authenticate(cls, jwt):
+    def authenticate(cls, user_jwt):
         """gets a user by its accessor"""
-        user_data = jwt.decode(jwt, SECRET_KEY, algorithm="HS256")
+        user_data = jwt.decode(user_jwt, SECRET_KEY, algorithms="HS256")
 
-        accessor = user_data[USER_ACCESSOR_KEY]
+        accessor = user_data[ACCESSOR_SESSION_KEY]
         u_id = user_data[USER_SESSION_KEY]
         user = cls.get(u_id)
         if user:
@@ -82,45 +98,39 @@ class User(db.Model):
 
     @classmethod
     def create(cls, email, token, api_id, token_expiration=None,  name=None):
-        u = User(email=email, token=token, token_expiration=token_expiration, name=email, api_id=api_id)
+        user = User(email=email, token=token, token_expiration=token_expiration, name=email, api_id=api_id)
         if name:
-            u.name = name
-        db.session.add(u)
+            user.name = name
+        db.session.add(user)
         db.session.commit()
-        #This will be false if the user was never created
-        accessor = u.update_accessor()
+        user.update_accessor()
 
-        #JWT payload looks like {USER_ACCESSOR_KEY: accessor, USER_SESSION_KEY: u.id}
-        user_jwt = jwt.encode({
-            USER_ACCESSOR_KEY: accessor,
-            USER_SESSION_KEY: u.id
-            },
-            SECRET_KEY,
-            algorithm=["HS256"])
-        return user_jwt
+        return user
     
     @classmethod
     def create_or_update(cls, email, token, api_id, token_expiration=None, name=None):
         """If a user with this email already exists, update the token (and name if given) 
         and return the id to the caller
             otherwise, create the user and return the id to the caller"""
-        u = cls.query.filter_by(email=email).first()
+        user = cls.query.filter_by(email=email).first()
         
-        if u:
+        if user:
             # user already exists, just update token
-            u.token = token
+            user.token = token
         else:
-            u = User(email=email, token=token, name=email, api_id=api_id)
+            user = User(email=email, token=token, name=email, api_id=api_id)
 
         if name:
-            u.name = name
+            user.name = name
             
         if token_expiration:
-            u.token_expiration = token_expiration
+            user.token_expiration = token_expiration
 
-        db.session.add(u)
+        db.session.add(user)
         db.session.commit()
-        return u
+        user.update_accessor()
+        
+        return user
     
     @classmethod
     def create_unique_accessor(cls):
