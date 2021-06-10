@@ -36,6 +36,16 @@ def update_token():
     else:
         print(f'failed fetching token for user {g.user.id}')
 
+def keep_api_token_up_to_date():
+    #assumed token expiration is in UTC
+    token_expiration = g.user.token_expiration
+    if not token_expiration:
+        return update_token()
+    token_expiration = pytz.utc.localize(token_expiration)
+
+    if (token_expiration - tz_utils.get_now_in(tz='UTC')) < RENEWAL_TIMEFRAME:
+        return update_token
+
 
 def keep_user_accessor_up_to_date(response):
     if g.user:
@@ -51,18 +61,6 @@ def keep_user_accessor_up_to_date(response):
                             expires=g.user.accessor_expiration)
     return response
     
-
-
-def keep_api_token_up_to_date():
-    #assumed token expiration is in UTC
-    token_expiration = g.user.token_expiration
-    if not token_expiration:
-        return update_token()
-    token_expiration = pytz.utc.localize(token_expiration)
-    RENEWAL_TIMEFRAME = datetime.timedelta(days=3)
-    
-    if (token_expiration - tz_utils.get_now_in(tz='UTC')) < RENEWAL_TIMEFRAME:
-        return update_token
 
 def ensure_logged_in():
     """If we're logged in, add curr user to Flask global.

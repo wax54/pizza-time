@@ -32,6 +32,7 @@ class User(db.Model):
         },
             SECRET_KEY,
             algorithm="HS256")
+        
     def update_token(self, token, token_expiration):
         """updates a users token"""
 
