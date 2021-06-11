@@ -10,6 +10,7 @@ RE_AUTH_EXTENSION = '/users/re_authenticate'
 def get_schedules(email, token, ignore=[]):
 
     session = request_with_retry()
+    return False
     try:
         res = session.get(
             f'{BASE_URL}{GET_SCHEDULES_EXTENSION}',
@@ -35,6 +36,8 @@ def get_schedules(email, token, ignore=[]):
 
 def get_delivery(email, token):
     session = request_with_retry()
+    print('helo!')
+    return False
     try:
         res = session.get(f'{BASE_URL}{GET_DELIVERY_EXTENSION}',
                           json={
@@ -69,6 +72,7 @@ def token_expiry(email, token):
 
 def re_auth(email, token):
     session = request_with_retry()
+    return False
     try:
         res = session.get(f'{BASE_URL}{RE_AUTH_EXTENSION}',
                           json={
@@ -95,11 +99,14 @@ def re_auth(email, token):
 
 
 def login(email, password):
+
     # Harden this up. sometimes get 500 error when the server needs to unseal
     # gets 404 out of nowhere
     # maybe just retry after a second?
-
+    print('helo!')
+    print (email, password)
     session = request_with_retry()
+    return False
     try:
         res = session.post(f'{BASE_URL}{LOGIN_EXTENSION}',
                            json={

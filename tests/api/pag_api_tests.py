@@ -4,12 +4,14 @@ from api import pag_api
 # NOTE THIS TEST WON'T WORK WITHOUT VALID PAGLIACCI DB CREDENTIALS LOCATED IN tests.api.pag_secrets.py
 from tests.api.pag_secrets import working_email, working_password
 
-
+print ('helo!')
 class LoginTests(TestCase):
 
     def test_login_with_valid_creds_returns_valid_token(self):
+        print('helo!')
         token = pag_api.login(
             email=working_email, password=working_password)
+        print('helo!')
         self.assertTrue(token)
         result = pag_api.get_delivery(email=working_email, token=token)
         self.assertTrue(result)
@@ -40,6 +42,8 @@ class GetDeliveriesTests(TestCase):
         # NOTE delivery.orders may be just an empty list
         delivery = pag_api.get_delivery(email=working_email, token=self.token)
         self.assertIsInstance(delivery.get('orders'), list)
+
+
 
     def test_invalid_credentals_return_false(self):
         delivery = pag_api.get_delivery(email=working_email, token="badtoken")
