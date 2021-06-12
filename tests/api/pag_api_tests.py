@@ -1,9 +1,5 @@
 from unittest import TestCase, mock
-from api import pag_api
-import requests
-
-# NOTE THIS TEST WON'T WORK WITHOUT VALID PAGLIACCI DB CREDENTIALS LOCATED IN tests.api.pag_secrets.py
-from tests.api.pag_secrets import working_email, working_password
+from api import pag_api, utils
 
 VALID_EMAIL = "test@test.com"
 VALID_PASSWORD = "SecretPassword"
@@ -17,6 +13,24 @@ class MockResponse:
     def json(self):
         return self.json_data
 
+class MockSession:
+    def get(self, *args, **kwargs): 
+        if args[0] == 'https://www.sam-the-dev.com/pag_api/users/get_delivery':
+            json = kwargs['json']
+            return mock_pag_delivery_route(json)
+        else:
+            return MockResponse(None, 404)
+        
+
+    def post(self, *args, **kwargs):
+        if args[0] == 'https://www.sam-the-dev.com/pag_api/login':
+            json = kwargs['json']
+            return mock_pag_login_route(json)
+        else:
+            return MockResponse(None, 404)
+
+    def close(self):
+        pass
 
 def mock_pag_login_route(json):
     if json['email'] == VALID_EMAIL and json['password'] == VALID_PASSWORD:
@@ -31,33 +45,17 @@ def mock_pag_delivery_route(json):
     else:
         return MockResponse({"status": False}, 200)
 
+# This method will be used by the mock to replace session with a mock session
+def mocked_request_with_retry(*args, **kwargs):
+    return MockSession()
 
 
-# This method will be used by the mock to replace requests.post
-def mocked_requests_post(*args, **kwargs):
-
-    if args[0] == 'https://www.sam-the-dev.com/pag_api/login':
-        json = kwargs['json']
-        return mock_pag_login_route(json)
-    elif args[0] == 'https://www.sam-the-dev.com/pag_api/users/get_delivery':
-        json = kwargs['json']
-        return mock_pag_delivery_route(json)
-    
-    return MockResponse(None, 404)
-
-# This method will be used by the mock to replace requests.get
-def mocked_requests_get(*args, **kwargs):
-    if args[0] == 'https://www.sam-the-dev.com/pag_api/users/get_delivery':
-        json = kwargs['json']
-        return mock_pag_delivery_route(json)
-
-    return MockResponse(None, 404)
 
 class LoginTests(TestCase):
-    # We patch 'session.post' with our own method. The mock object is passed in to our test case method.
-    @mock.patch('requests.Session.post', side_effect=mocked_requests_post)
-    @mock.patch('requests.Session.get', side_effect=mocked_requests_get)
-    def test_login_with_valid_creds_returns_valid_token(self, mock_get, mock_post):
+    # We patch 'request_with_retry' with our own one that returns the mock session object
+    @mock.patch('api.pag_api.request_with_retry', side_effect=mocked_request_with_retry)
+    def test_login_with_valid_creds_returns_valid_token(self, mock_session_getter):
+        
         res = pag_api.login(
             email=VALID_EMAIL, password=VALID_PASSWORD)
         token = res['token']
