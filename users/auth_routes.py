@@ -52,7 +52,7 @@ def login_to_demo():
                             token_expiration=expiration, 
                             api_id=api_key)
             
-            user_jwt = User.make_jwt()
+            user_jwt = user.make_jwt()
             
             #TODO change pag and multi login
             
@@ -66,6 +66,7 @@ def login_to_demo():
             
             return resp 
         except Exception as e:
+            print(e)
             #login failed
             flash("Woah there Buddy, Try That Again.", "danger")
             print(e.with_traceback(None))
