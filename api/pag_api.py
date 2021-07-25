@@ -1,5 +1,5 @@
 from api.utils import request_with_retry, get_date, get_datetime, make_date_time_from_now
-import api
+
 BASE_URL = 'https://www.sam-the-dev.com/pag_api'
 LOGIN_EXTENSION = '/login'
 GET_DELIVERY_EXTENSION = '/users/get_delivery'
