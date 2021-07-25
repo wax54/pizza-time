@@ -1,6 +1,6 @@
 from unittest import TestCase
 from api.utils import *
-from datetime import date as date_class
+from datetime import date as Date
 
 
 class GetDateTests(TestCase):
@@ -9,4 +9,4 @@ class GetDateTests(TestCase):
 
     def test_get_date_returns_date(self):
         date = get_date(self.test_date_string)
-        self.assertIsInstance(date, date_class)
+        self.assertIsInstance(date, Date)

@@ -4,7 +4,7 @@ from api import demo_api
 
 class LoginTests(TestCase):
 
-    def test_login_with_creds_returns_token(self):
+    def test_login_with_creds_returns_valid_token(self):
         demo_email = "AnyString"
         demo_password = "LiterlyAnyStringShouldWork"
         token = demo_api.login(
@@ -13,10 +13,13 @@ class LoginTests(TestCase):
         result = demo_api.get_delivery(email=demo_email, token=token)
         self.assertTrue(result)
 
-    def test_login_with_empty_creds_returns_false(self):
-        token = demo_api.login(
-            email="", password="")
-        self.assertFalse(token)
+    def test_login_with_no_creds_returns_valid_token(self):
+
+        demo_email = "AnyString"
+        token = demo_api.login()
+        self.assertTrue(token)
+        result = demo_api.get_delivery(email=demo_email, token=token)
+        self.assertTrue(result)
 
 
 class GetDeliveriesTests(TestCase):

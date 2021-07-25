@@ -74,6 +74,6 @@ def re_auth(email, token):
     return {"token": hash(randint(100, 100000000)), "expiration": make_date_time_from_now(years=1)}
 
 
-def login():
+def login(email='', password=''):
     # successful login
     return {"token": hash(randint(100, 100000000)), "expiration": make_date_time_from_now(years=1)}

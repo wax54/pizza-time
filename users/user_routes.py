@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, jsonify, render_template, session, flash, g, request
-from config import USER_SESSION_KEY, API_SESSION_KEY, ACCESSOR_SESSION_KEY, JWT_AUTH_KEY, SECRET_KEY
+from config import RENEWAL_TIMEFRAME, USER_SESSION_KEY, API_SESSION_KEY, ACCESSOR_SESSION_KEY, JWT_AUTH_KEY, SECRET_KEY
 from deliveries.models import Delivery, Order
 from customers.models import Customer, Note
 from users.models import User, Schedule, WeekCode
@@ -16,10 +16,63 @@ import jwt
 
 user_views = Blueprint('user_routes', __name__)
 #used for tokens and accessors - anything with less than 3 days of life left gets renewed
+RENEWAL_TIMEFRAME = datetime.timedelta(days=3)
 
 def urlencode(string):
     """encode a string to be added to a url"""
     return urllib.parse.quote_plus(string)
+
+
+def update_token():
+
+    token = g.user.token
+    email = g.user.email
+    #token is expired, do something!
+    new_token_glob = g.api.re_auth(email=email, token=token)
+    if(new_token_glob):
+        new_token = new_token_glob['token']
+        expiration = new_token_glob['expiration']
+        g.user.update_token(token=new_token,
+                            token_expiration=expiration)
+    else:
+        print(f'failed fetching token for user {g.user.id}')
+
+def keep_api_token_up_to_date():
+    token_expiration = g.user.token_expiration
+    #if there is no expiration, update the token
+    if not token_expiration:
+        return update_token()
+    
+    #assumed token expiration is in UTC
+    token_expiration = tz_utils.get_time_as_utc(token_expiration, 'UTC')
+
+    if (token_expiration - tz_utils.get_now_in(tz='UTC')) < RENEWAL_TIMEFRAME:
+        return update_token()
+
+
+def keep_user_accessor_up_to_date(response):
+    if g.user:
+        curr_expiration = g.user.accessor_expiration
+        curr_expiration = pytz.utc.localize(curr_expiration)
+        # seeing if the accessor has less than RENEWAL_TIMEFRAME TTL
+        if (curr_expiration - tz_utils.get_now_in(tz='UTC')) < RENEWAL_TIMEFRAME:
+            #accessor is expired!
+            g.user.update_accessor()
+            user_jwt = g.user.make_jwt()
+            # put the auth in the cookies
+            response.set_cookie(JWT_AUTH_KEY, user_jwt,
+                            expires=g.user.accessor_expiration)
+    return response
+    
+
+def ensure_logged_in():
+    """If we're logged in, add curr user to Flask global.
+    otherwise, redirect them to login"""
+    # if USER_SESSION_KEY in session:
+    if g.user:
+        return True
+    else:
+        return False
 
 # This is run before any route in this file
 @user_views.before_request

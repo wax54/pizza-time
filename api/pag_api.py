@@ -58,19 +58,17 @@ def get_delivery(email, token):
         else:
             # server worked, but creds didn't
             return False
-    except:
+    except Exception as e:
+        print('hello2',e)
         # DB Down (likely)
         # close the session
         session.close()
         return False
     
-def token_expiry(email, token):
-    return make_date_time_from_now(days=3)
-
 def re_auth(email, token):
     session = request_with_retry()
     try:
-        res = session.get(f'{BASE_URL}{RE_AUTH_EXTENSION}',
+        res = session.post(f'{BASE_URL}{RE_AUTH_EXTENSION}',
                           json={
                               "email": email,
                               "token": token
@@ -87,7 +85,7 @@ def re_auth(email, token):
         else:
             # server worked, but creds didn't
             return False
-    except:
+    except Exception as e:
         # DB Down (likely)
         # close the session
         session.close()
@@ -95,10 +93,10 @@ def re_auth(email, token):
 
 
 def login(email, password):
+
     # Harden this up. sometimes get 500 error when the server needs to unseal
     # gets 404 out of nowhere
     # maybe just retry after a second?
-
     session = request_with_retry()
     try:
         res = session.post(f'{BASE_URL}{LOGIN_EXTENSION}',
