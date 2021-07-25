@@ -24,9 +24,11 @@ def urlencode(string):
 
 
 def update_token():
-
+    print("Updating token for ")
     token = g.user.token
     email = g.user.email
+
+    print("Updating token for user ", email)
     #token is expired, do something!
     new_token_glob = g.api.re_auth(email=email, token=token)
     if(new_token_glob):
