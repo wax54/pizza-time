@@ -94,11 +94,11 @@ def login_to_pag():
         api = apis[api_key]
         #attempt to login to the API
         token_glob = api.login(email=email, password=password)
-        
-        token = token_glob['token']
-        expiration = token_glob['expiration']
+
         #if success
-        if token:
+        if token_glob:
+            token = token_glob['token']
+            expiration = token_glob['expiration']
             #save them in the DB
             user = User.create_or_update(name=name, 
                                         email=email, 

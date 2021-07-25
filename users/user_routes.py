@@ -23,11 +23,11 @@ def urlencode(string):
 
 
 def update_token():
+
     token = g.user.token
     email = g.user.email
     #token is expired, do something!
     new_token_glob = g.api.re_auth(email=email, token=token)
-
     if(new_token_glob):
         new_token = new_token_glob['token']
         expiration = new_token_glob['expiration']
@@ -37,14 +37,16 @@ def update_token():
         print(f'failed fetching token for user {g.user.id}')
 
 def keep_api_token_up_to_date():
-    #assumed token expiration is in UTC
     token_expiration = g.user.token_expiration
+    #if there is no expiration, update the token
     if not token_expiration:
         return update_token()
-    token_expiration = pytz.utc.localize(token_expiration)
+    
+    #assumed token expiration is in UTC
+    token_expiration = tz_utils.get_time_as_utc(token_expiration, 'UTC')
 
     if (token_expiration - tz_utils.get_now_in(tz='UTC')) < RENEWAL_TIMEFRAME:
-        return update_token
+        return update_token()
 
 
 def keep_user_accessor_up_to_date(response):

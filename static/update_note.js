@@ -60,6 +60,7 @@ function changeToEditNoteView(evt) {
     personalNote.style.display = "none";
     //display the note input
     personalNote.parentElement.append(orderNoteContainer);
+    noteForm.querySelector('.note-input').focus();
 }
 
 function createCustomNoteInput(custId, defaultValue) {

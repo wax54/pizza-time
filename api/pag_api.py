@@ -10,7 +10,6 @@ RE_AUTH_EXTENSION = '/users/re_authenticate'
 def get_schedules(email, token, ignore=[]):
 
     session = request_with_retry()
-    return False
     try:
         res = session.get(
             f'{BASE_URL}{GET_SCHEDULES_EXTENSION}',
@@ -59,20 +58,17 @@ def get_delivery(email, token):
         else:
             # server worked, but creds didn't
             return False
-    except:
+    except Exception as e:
+        print('hello2',e)
         # DB Down (likely)
         # close the session
         session.close()
         return False
     
-def token_expiry(email, token):
-    return make_date_time_from_now(days=3)
-
 def re_auth(email, token):
     session = request_with_retry()
-    return False
     try:
-        res = session.get(f'{BASE_URL}{RE_AUTH_EXTENSION}',
+        res = session.post(f'{BASE_URL}{RE_AUTH_EXTENSION}',
                           json={
                               "email": email,
                               "token": token
@@ -89,7 +85,7 @@ def re_auth(email, token):
         else:
             # server worked, but creds didn't
             return False
-    except:
+    except Exception as e:
         # DB Down (likely)
         # close the session
         session.close()
