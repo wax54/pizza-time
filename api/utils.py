@@ -36,10 +36,17 @@ def get_date(date):
     return datetime.datetime.strptime(date, DATE_FORMAT).date()
 
 
-def make_date_time_from_now(days=0, hours=0):
+def get_datetime(date):
+    return datetime.datetime.strptime(date, DATE_FORMAT)
+
+
+def make_date_time_from_now(years=0, months=0, days=0, hours=0):
     """a function that returns a string 
     representing a time that is 'days' days 
     and 'hours' hours away from now"""
+    months = (years * 12) + months
+    days = (months * 30) + days
+    
     now = tz_utils.get_now_in()
     date_time = now + datetime.timedelta(days=days, hours=hours)
     return date_time

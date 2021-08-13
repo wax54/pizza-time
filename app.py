@@ -1,7 +1,7 @@
 from markupsafe import Markup
-from flask import Flask, redirect
-
-from config import DB_URL, SECRET_KEY
+from flask import Flask, redirect, request, g
+from helpers.middleware import add_user_to_g, https_redirect
+from config import DB_URL, SECRET_KEY, JWT_AUTH_KEY
 from db_setup import connect_db, db
 from routes import auth_views, user_views,  customer_api, customer_views, order_api
 
@@ -21,6 +21,13 @@ connect_db(app)
 # db.drop_all()
 # db.create_all()
 
+
+@app.before_request
+def before_app_request():
+    redirect = https_redirect()
+    if redirect:
+        return redirect
+    add_user_to_g()
 
 @app.template_filter('timeformat')
 def format_date(value):

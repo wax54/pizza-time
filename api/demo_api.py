@@ -1,6 +1,7 @@
 from random import randint
 from api.utils import string_date_time, make_date_time_from_now
 import datetime
+DATE_FORMAT = "%a, %d %b %Y %H:%M:%S %Z"  # "Mon, 19 Apr 2021 00:00:00 GMT"
 
 DEMO_DELIVERY = {"orders": [{"num": 43,
                              "name": "Kassandra Meyers",
@@ -21,10 +22,10 @@ DEMO_SCHEDULES = [
          {"start": string_date_time(make_date_time_from_now(hours=-1)),
           "end": string_date_time(make_date_time_from_now(hours=5)),
           "shift_type": "DR1"},
-         {"start": string_date_time(make_date_time_from_now(days=1,hours=-1)), 
+         {"start": string_date_time(make_date_time_from_now(days=1,hours=-2)), 
           "end": string_date_time(make_date_time_from_now(days=1, hours=8)),
           "shift_type": "DRRUSH"},
-         {"start": string_date_time(make_date_time_from_now(days=3, hours=-1)),
+         {"start": string_date_time(make_date_time_from_now(days=3, hours=1)),
           "end": string_date_time(make_date_time_from_now(days=3, hours=3)),
           "shift_type": "DR4"},
          {"start": string_date_time(make_date_time_from_now(days=5, hours=-1)),
@@ -44,7 +45,7 @@ def order_num_generator():
 order_num = order_num_generator()
 
 def make_date(date):
-    return date.strftime(DATE_FORMAT)
+    return datetime.date.strftime(DATE_FORMAT)
 
 def get_schedules(email, token, ignore=[]):
     if email and token:
@@ -65,7 +66,14 @@ def get_delivery(email, token):
     else:
         return False
 
+def token_expiry(email, token):
+    return make_date_time_from_now(days=4)
 
-def login():
+
+def re_auth(email, token):
+    return {"token": hash(randint(100, 100000000)), "expiration": make_date_time_from_now(years=1)}
+
+
+def login(email='', password=''):
     # successful login
-    return hash(randint(100, 100000000))
+    return {"token": hash(randint(100, 100000000)), "expiration": make_date_time_from_now(years=1)}

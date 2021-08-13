@@ -4,6 +4,7 @@ from customers.models import Customer
 from datetime import date as date_class
 
 
+
 class Delivery(db.Model):
     """A single delivery"""
     __tablename__ = "deliveries"

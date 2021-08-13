@@ -1,7 +1,7 @@
 body{
     background-color: var(--bs-gray-dark);
     color: var(--bs-light);
-    font-size: 1.75rem;
+    font-size: 1.5rem;
 }
 
 ul{
@@ -9,21 +9,21 @@ ul{
     padding-inline-start: 0px;
 }
 .smaller-text{
-    font-size: 1.2rem;
+    font-size: 1.0rem;
 }
 
 .normal-text{
-    font-size: 1.75rem;
+    font-size: 1.3rem;
 }
 .big-text{
-    font-size: 2.25rem;
+    font-size: 1.5rem;
 }
 
 .larger-text{
-    font-size: 2.75rem;
+    font-size: 1.75rem;
 }
 .even-larger-text{
-    font-size: 3.25rem;
+    font-size: 2rem;
 }
 
 

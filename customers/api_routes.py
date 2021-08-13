@@ -1,19 +1,29 @@
 from flask import Blueprint, redirect, jsonify, session, g, request
+from helpers.middleware import ensure_logged_in
 from config import USER_SESSION_KEY, API_SESSION_KEY
 from customers.models import Customer, Note
 from users.models import User
 
 customer_api = Blueprint('customer_api_routes', __name__)
 
-
+# This is run before any route in this file
 @customer_api.before_request
-def add_user_to_g_or_redirect():
-    """If we're logged in, add curr user to Flask global.
-    otherwise, redirect them to login"""
-    if USER_SESSION_KEY in session:
-        g.user = User.query.get(session[USER_SESSION_KEY])
-    else:
-        g.user = None
+def before_user_routes():
+    #make sure if these functions return something, this whole function will return something
+    logged_in = ensure_logged_in()
+    if not logged_in:
+        return jsonify(status=False, message="Not Logged In")
+
+
+
+# @customer_api.before_request
+# def add_user_to_g_or_redirect():
+#     """If we're logged in, add curr user to Flask global.
+#     otherwise, redirect them to login"""
+#     if USER_SESSION_KEY in session:
+#         g.user = User.query.get(session[USER_SESSION_KEY])
+#     else:
+#         g.user = None
 
 
 @customer_api.route('/note/update', methods=["POST"])
