@@ -32,7 +32,8 @@ class Delivery(db.Model):
             # maybe change this to a hash of the phone and address
             customer_id = Customer.make_id_from_phone(order['phone'])
             customer = Customer.create_or_get(
-                id=customer_id, name=order['name'].split(' ')[0])
+                id=customer_id)
+            # name = order['name'].split(' ')[0]
 
             db_order = Order.get(order['num'], date, store, api_id)
             if db_order:

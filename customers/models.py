@@ -29,11 +29,12 @@ class Customer(db.Model):
         return hashlib.md5(phone.encode()).hexdigest()
 
     @classmethod
-    def create_or_get(cls, id, name, address=None, phone=None):
+    def create_or_get(cls, id, name=None, address=None, phone=None):
         customer = cls.query.get(id)
         if customer:
             # update customer
-            customer.name = name
+            if name:
+                customer.name = name
             if address:
                 customer.address = address
             if phone:
