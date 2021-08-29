@@ -24,9 +24,11 @@ connect_db(app)
 
 @app.before_request
 def before_app_request():
+    #redrect to https
     redirect = https_redirect()
     if redirect:
         return redirect
+    #add user info to global var
     add_user_to_g()
 
 @app.template_filter('timeformat')
