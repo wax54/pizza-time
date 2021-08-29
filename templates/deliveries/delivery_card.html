@@ -1,9 +1,14 @@
 {% if delivery %}
 <div class="row justify-content-center">
+<a class="btn btn-primary btn-lg btn-block py-1 larger-text" 
+    href="{{ delivery['orders']|get_nav_all_link }}">
+    <span class="normal-text">Nav All <small>(beta)</small></span>
+</a>
+
 {% for order in delivery['orders'] %}
-<div class="col-12 col-xl-6 my-2" id="{{order['num']}}-card">
-    {% include 'deliveries/current_order_card.html' %}
-</div>
+    <div class="col-12 col-xl-6 my-2" id="{{order['num']}}-card">
+        {% include 'deliveries/current_order_card.html' %}
+    </div>
 {% endfor %}
 </div>
 {% endif %}

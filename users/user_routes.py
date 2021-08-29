@@ -18,21 +18,7 @@ user_views = Blueprint('user_routes', __name__)
 #used for tokens and accessors - anything with less than 3 days of life left gets renewed
 RENEWAL_TIMEFRAME = datetime.timedelta(days=3)
 
-def urlencode(string):
-    """encode a string to be added to a url"""
-    return urllib.parse.quote_plus(string)
-#TODO 
-#Finish up this func
-def get_nav_all_link(addresses):
-    """returns a google maps link with all the addresses naved in order"""
-    #https://www.google.com/maps/dir/?api=1&origin=Paris%2CFrance&destination=Cherbourg%2CFrance&travelmode=driving&waypoints=Versailles%2CFrance%7CChartres%2CFrance%7CLe+Mans%2CFrance%7CCaen%2CFrance
-    address_link = "&waypoints="
-    i = 0
-    while(i < (len(addresses) - 1)):
-        address_link += urlencode(addresses[i])+"%7C"
-    link = "https://www.google.com/maps/dir/?api=1"+address_link+"&destination="+urlencode(addresses[len(addresses) - 1])
-    return link
-    
+
 
 def update_token():
     token = g.user.token

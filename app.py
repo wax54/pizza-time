@@ -4,6 +4,7 @@ from helpers.middleware import add_user_to_g, https_redirect
 from config import DB_URL, SECRET_KEY, JWT_AUTH_KEY
 from db_setup import connect_db, db
 from routes import auth_views, user_views,  customer_api, customer_views, order_api
+import urllib
 
 import datetime
 from deliveries.models import *
@@ -43,6 +44,27 @@ def format_date(value, format='medium'):
     elif format == 'medium':
         format = "%a, %b %d"
     return datetime.date.strftime(value, format)
+
+
+def urlencode(string):
+    """encode a string to be added to a url"""
+    return urllib.parse.quote_plus(string)
+
+#TODO
+#Finish up this func
+@app.template_filter('get_nav_all_link')
+def get_nav_all_link(orders):
+    """returns a google maps link with all the addresses naved in order"""
+    #https://www.google.com/maps/dir/?api=1&origin=Paris%2CFrance&destination=Cherbourg%2CFrance&travelmode=driving&waypoints=Versailles%2CFrance%7CChartres%2CFrance%7CLe+Mans%2CFrance%7CCaen%2CFrance
+    addresses = [o['address'] for o in orders]
+    addresses = [urlencode(a) for a in addresses]
+    dest = addresses.pop()
+    waypoints = "%7C".join(addresses)
+    link = "https://www.google.com/maps/dir/?api=1&destination="+dest
+    if waypoints:
+        link += "&waypoints="+waypoints
+    return link
+
 
 app.register_blueprint(auth_views, url_prefix="")
 app.register_blueprint(user_views, url_prefix="")
