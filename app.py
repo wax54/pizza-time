@@ -55,6 +55,8 @@ def urlencode(string):
 @app.template_filter('get_nav_all_link')
 def get_nav_all_link(delivery):
     """returns a google maps link with all the addresses naved in order"""
+    if len(delivery['orders']) == 0:
+        return ""
     #https://www.google.com/maps/dir/?api=1&origin=Paris%2CFrance&destination=Cherbourg%2CFrance&travelmode=driving&waypoints=Versailles%2CFrance%7CChartres%2CFrance%7CLe+Mans%2CFrance%7CCaen%2CFrance
     store = delivery['store']
     #TODO get store address
