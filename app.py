@@ -64,7 +64,14 @@ def get_nav_all_link(delivery):
     #   get rid of addresses.pop
     orders = delivery['orders']
     addresses = [urlencode(o['address']) for o in orders]
-    dest = addresses.pop()
+    # dest = addresses.pop()
+    dest = None
+
+    if len(store + "") > 1:
+        dest = urlencode(store + " Pagliacci")
+    else:
+        dest = addresses.pop()
+    
     waypoints = "%7C".join(addresses)
     link = "https://www.google.com/maps/dir/?api=1&destination="+dest
     if waypoints:
