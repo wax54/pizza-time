@@ -1,0 +1,8 @@
+{% if delivery %}
+<div class="col-12 col-xl-6 my-2" id="{{order['num']}}-card">
+    <a class="btn btn-primary btn-lg btn-block py-1 larger-text" 
+        href="{{ delivery|get_nav_all_link }}">
+        <span class="normal-text">Nav All <small>(beta)</small></span>
+    </a>
+</div>
+{% endif %}
