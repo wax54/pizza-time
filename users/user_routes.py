@@ -133,7 +133,6 @@ def show_current_delviery():
                     curr_order['id'] = db_order.id
                     curr_order['tip'] = db_order.tip
                     curr_order['customer'] = db_order.customer
-    print(delivery)
     return render_template('deliveries/current_delivery.html', delivery=delivery, name=g.user.name)
 
 
