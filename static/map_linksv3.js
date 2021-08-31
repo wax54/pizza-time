@@ -19,18 +19,23 @@ function setPrefferedMap(pref) {
 
 function updateMapLinks() {
     /* if we're on iOS, replace the https: with maps: protocol */
+    
     if (onAppleMobileTech()) {
+        //replace nav-all-btn with apple equiv link
+        const navAllBtn = document.getElementById("nav-all-btn");
+        navAllBtn.href = navAllBtn.href.replace("https://", "maps://");
+
         if (prefferedMap() === APPLE) {
             const mapLinks = document.getElementsByClassName("map-link");
             for (let link of mapLinks) {
-                //replace all the links with map links
+                //replace all the links with apple map api
                 const destination = link.dataset.destination;
                 link.href = `maps://maps.apple.com/?daddr=${destination}`
             }
         } else {
             const mapLinks = document.getElementsByClassName("map-link");
             for(let link of mapLinks){
-                //replace all the links with map links
+                //replace all the links with maps:// links
                 const destination = link.dataset.destination;
                 link.href = `maps://www.google.com/maps/dir/?api=1&dir_action=navigate&destination=${destination}`
             } 
