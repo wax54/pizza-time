@@ -78,52 +78,54 @@ def login_to_demo():
 
 @auth_views.route('/pag/login', methods=["GET", "POST"])
 def login_to_pag():
-    """Displays the login form on GET 
-    Attempts to Log the user into the PAG API on POST"""
-    #get the form
-    form = PagUserLogin()
-    #see if its a POST and if all required data is there
-    if form.validate_on_submit():
+    return render_template('sorry_legal_troubles.html')
 
-        name = form.name.data
-        email = form.email.data
-        password = form.password.data
-        
-        api_key = PAG_KEY
-        
-        #set the API to use the Pag api
-        api = apis[api_key]
-        #attempt to login to the API
-        token_glob = api.login(email=email, password=password)
+    # """Displays the login form on GET 
+    # Attempts to Log the user into the PAG API on POST"""
+    # #get the form
+    # form = PagUserLogin()
+    # #see if its a POST and if all required data is there
+    # if form.validate_on_submit():
 
-        #if success
-        if token_glob:
-            token = token_glob['token']
-            expiration = token_glob['expiration']
-            #save them in the DB
-            user = User.create_or_update(name=name, 
-                                        email=email, 
-                                        token=token, 
-                                        token_expiration=expiration, 
-                                        api_id=api_key)
+    #     name = form.name.data
+    #     email = form.email.data
+    #     password = form.password.data
+        
+    #     api_key = PAG_KEY
+        
+    #     #set the API to use the Pag api
+    #     api = apis[api_key]
+    #     #attempt to login to the API
+    #     token_glob = api.login(email=email, password=password)
+
+    #     #if success
+    #     if token_glob:
+    #         token = token_glob['token']
+    #         expiration = token_glob['expiration']
+    #         #save them in the DB
+    #         user = User.create_or_update(name=name, 
+    #                                     email=email, 
+    #                                     token=token, 
+    #                                     token_expiration=expiration, 
+    #                                     api_id=api_key)
             
-            #This will be false if the user was never created
-            user_jwt = user.make_jwt()
-            #put the id in the session
-            #redirect to curr_del page
-            resp = make_response(redirect('/current_delivery'))
-            #put the auth and api in the cookies
-            resp.set_cookie(JWT_AUTH_KEY, user_jwt,
-                            expires=user.accessor_expiration)
-            return resp
-        else:
-            #login failed
-            flash("Not Valid Credentials!", "danger")
-            #return to login page
-            return render_template('user_login.html', form=form)
-    else:
-        #show login page
-        return render_template('user_login.html', form=form)
+    #         #This will be false if the user was never created
+    #         user_jwt = user.make_jwt()
+    #         #put the id in the session
+    #         #redirect to curr_del page
+    #         resp = make_response(redirect('/current_delivery'))
+    #         #put the auth and api in the cookies
+    #         resp.set_cookie(JWT_AUTH_KEY, user_jwt,
+    #                         expires=user.accessor_expiration)
+    #         return resp
+    #     else:
+    #         #login failed
+    #         flash("Not Valid Credentials!", "danger")
+    #         #return to login page
+    #         return render_template('user_login.html', form=form)
+    # else:
+    #     #show login page
+    #     return render_template('user_login.html', form=form)
 
 
 @auth_views.route('/multi/login', methods=["GET", "POST"])

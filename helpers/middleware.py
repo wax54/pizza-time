@@ -1,4 +1,5 @@
 from flask import g, request, redirect
+from api import PAG_KEY
 from config import RENEWAL_TIMEFRAME, JWT_AUTH_KEY
 from users.models import User
 
@@ -63,7 +64,12 @@ def add_user_to_g():
     if JWT_AUTH_KEY in request.cookies:
         try:
             user_jwt = request.cookies[JWT_AUTH_KEY]
-            g.user = User.authenticate(user_jwt)
+            u = User.authenticate(user_jwt)
+            if u.api_id == PAG_KEY:
+                g.user = None
+            else:
+                g.user = u
+            
         except:
             g.user = None
     else:

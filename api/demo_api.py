@@ -5,11 +5,11 @@ DATE_FORMAT = "%a, %d %b %Y %H:%M:%S %Z"  # "Mon, 19 Apr 2021 00:00:00 GMT"
 
 DEMO_DELIVERY = {"orders": [{"num": 43,
                              "name": "Kassandra Meyers",
-                             "address": "202 Waterwood Bend, Peachtree City",
+                             "address": "12704 NE 88th Ln, Kirkland, WA 98033",
                             "phone": "425-155-1443"},
                             {"num": 17,
                             "name": "Gracy Williams",
-                             "address": "103 Pine Cone Break, Peachtree City",
+                             "address": "10035 127th Ave NE, Kirkland, WA 98033",
                              "phone": "425-555-8972"}],
                  "date": string_date_time(
                      make_date_time_from_now().date()),
